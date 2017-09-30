@@ -7,21 +7,19 @@ require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
 # Require gems we care about
 require 'rubygems'
-
 require 'uri'
 require 'pathname'
-
+require 'bcrypt'
 require 'pg'
 require 'active_record'
 require 'logger'
-
+require 'irbtools'
+require 'pry'
 require 'sinatra'
 require "sinatra/reloader" if development?
-
 require 'erb'
-require 'pry'
 
-# Adam's Requires
+## Adam's Gems ##
 require 'faker'
 require 'will_paginate'
 require 'will_paginate/active_record'
@@ -31,6 +29,18 @@ require 'will_paginate/active_record'
 APP_ROOT = Pathname.new(File.expand_path('../../', __FILE__))
 
 APP_NAME = APP_ROOT.basename.to_s
+
+configure do
+  # By default, Sinatra assumes that the root is the file that calls the configure block.
+  # Since this is not the case for us, we set it manually.
+  set :root, APP_ROOT.to_path
+  # See: http://www.sinatrarb.com/faq.html#sessions
+  enable :sessions
+  set :session_secret, ENV['SESSION_SECRET'] || 'this is a secret shhhhh'
+
+  # Set the views to
+  set :views, File.join(Sinatra::Application.root, "app", "views")
+end
 
 # Set up the controllers and helpers
 Dir[APP_ROOT.join('app', 'controllers', '*.rb')].each { |file| require file }

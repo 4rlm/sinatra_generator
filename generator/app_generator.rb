@@ -1,4 +1,3 @@
-# require_relative 'file_migrator'
 require_relative 'file_writer'
 require 'active_support/all'
 require 'pry'
@@ -31,6 +30,8 @@ class AppGenerator
     @mvc = mvc_string.downcase.split(' ')
     generate_models
     generate_controllers
+    generate_helpers
+
     # generate_views
     puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
 
@@ -58,15 +59,18 @@ class AppGenerator
     end
   end
 
-  # application_controller.rb
-
-  def generate_controllers ####### HERE !!!!!!!!!!!
-    # controller_names = @mvc
-    # controller_names << 'application'
-
+  def generate_controllers
     @mvc.each do |snake_case|
       path = "controllers/#{snake_case}_controller.rb"
-      content = FileWriter.make_controller_content(snake_case.camelize)
+      content = FileWriter.make_controller_content(snake_case, snake_case.camelize)
+      create_file(path, content)
+    end
+  end
+
+  def generate_helpers
+    @mvc.each do |snake_case|
+      path = "helpers/#{snake_case}_helper.rb"
+      content = FileWriter.make_helper_content(snake_case.camelize)
       create_file(path, content)
     end
   end
@@ -83,7 +87,7 @@ class AppGenerator
 
   def unzip_files
     unzip_file_paths = %w(
-      app/controllers/application.rb
+      app/controllers/application_controller.rb
       app/controllers/index.rb
       app/views/index.erb
       app/views/layout.erb
@@ -105,6 +109,7 @@ class AppGenerator
       Gemfile
       Rakefile
       x_notes_crud_demo.txt
+      x_steps.txt
       x_setup_tips.txt)
 
     unzip_file_paths.each do |file_path|
@@ -118,7 +123,3 @@ class AppGenerator
 
 
 end
-
-new_app = AppGenerator.new
-new_app.starter
-# new_app.unzip_files

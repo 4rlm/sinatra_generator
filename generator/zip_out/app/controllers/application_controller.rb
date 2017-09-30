@@ -1,3 +1,13 @@
+# application_controller.rb
+class ApplicationController < Sinatra::Base
+
+  get '/' do
+    'Example!'
+    # erb :'index'
+  end
+
+end
+
 ####################################################
 ####   THIS PAGE IS ONLY FOR SYNTAX REFERENCE   ####
 ####            - NOT USED IN APP -             ####
