@@ -1,4 +1,5 @@
-require_relative 'file_content'
+# require_relative 'file_migrator'
+require_relative 'file_writer'
 require 'active_support/all'
 require 'pry'
 
@@ -8,6 +9,13 @@ class AppGenerator
   def initialize
     @app_name = nil
     @mvc = []
+  end
+
+  def unzip_files
+    puts "I'm unzipped!"
+    src = Dir["zip_out/zip_samp/*"]
+    dest = "zip_out/to/"
+    FileUtils.cp(src, dest)
   end
 
 
@@ -46,7 +54,7 @@ class AppGenerator
   def generate_models
     @mvc.each do |snake_case|
       path = "models/#{snake_case}.rb"
-      content = FileContent.make_model_content(snake_case.camelize)
+      content = FileWriter.make_model_content(snake_case.camelize)
       create_file(path, content)
     end
   end
@@ -59,7 +67,7 @@ class AppGenerator
 
     @mvc.each do |snake_case|
       path = "controllers/#{snake_case}_controller.rb"
-      content = FileContent.make_controller_content(snake_case.camelize)
+      content = FileWriter.make_controller_content(snake_case.camelize)
       create_file(path, content)
     end
   end
@@ -72,11 +80,6 @@ class AppGenerator
 
   def create_file(path, content)
     File.open("../#{@app_name}/app/#{path}", "w+") { |file| file.write(content) }
-  end
-
-  def migrate_files
-    puts "hi!"
-
   end
 
 
@@ -95,4 +98,4 @@ end
 # appgen = AppGenerator.generate(args)
 new_app = AppGenerator.new
 # new_app.prompt
-new_app.migrate_files
+new_app.unzip_files

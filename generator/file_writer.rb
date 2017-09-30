@@ -1,7 +1,7 @@
 require 'active_support/all'
 require 'pry'
 
-module FileContent
+module FileWriter
   extend ActiveSupport::Concern
 
   def self.make_model_content(camelized)
