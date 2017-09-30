@@ -11,13 +11,12 @@ class AppGenerator
     @mvc = []
   end
 
-  def unzip_files
-    puts "I'm unzipped!"
-    src = Dir["zip_out/zip_samp/*"]
-    dest = "zip_out/to/"
-    FileUtils.cp(src, dest)
-  end
+  #####################
 
+  def starter
+    prompt
+    unzip_files
+  end
 
   def prompt
     puts "\nAnswer Questions below in the following format:\n-snake_case\n-singular form\n-separated by space 'if multiple strings'.\n\nEx ~\nApp Name: city_app\nMVC: member city_guide article\n\n"
@@ -82,20 +81,44 @@ class AppGenerator
     File.open("../#{@app_name}/app/#{path}", "w+") { |file| file.write(content) }
   end
 
+  def unzip_files
+    unzip_file_paths = %w(
+      app/controllers/application.rb
+      app/controllers/index.rb
+      app/views/index.erb
+      app/views/layout.erb
+      config/database.rb
+      config/environment.rb
+      public/css/application.css
+      public/css/bootstrap.min.css
+      public/css/normalize.css
+      public/css/style.css
+      public/fonts/glyphicons-halflings-regular.eot
+      public/fonts/glyphicons-halflings-regular.svg
+      public/fonts/glyphicons-halflings-regular.ttf
+      public/fonts/glyphicons-halflings-regular.woff
+      public/fonts/glyphicons-halflings-regular.woff2
+      public/js/application.js
+      public/js/bootstrap.min.js
+      public/js/jquery.js
+      config.ru
+      Gemfile
+      Rakefile
+      x_notes_crud_demo.txt
+      x_setup_tips.txt)
 
+    unzip_file_paths.each do |file_path|
+      src = "zip_out/#{file_path}"
+      dest = "../#{@app_name}/#{file_path}"
+      FileUtils.mkdir_p(File.dirname(dest))
+      FileUtils.cp(src, dest)
+    end
 
-  # def initialize(model)
-  #   @model = model
-  #   @file_name = "#{@model.to_s.pluralize.downcase}.csv"
-  #   @dir_path = "./db/backups"
-  #   FileUtils.mkdir_p(@dir_path)
-  #   @file_path = "#{@dir_path}/#{@file_name}"
-  # end
+  end
+
 
 end
 
-# args = {models: ['city_guide', 'member']}
-# appgen = AppGenerator.generate(args)
 new_app = AppGenerator.new
-# new_app.prompt
-new_app.unzip_files
+new_app.starter
+# new_app.unzip_files

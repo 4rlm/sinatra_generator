@@ -1,0 +1,556 @@
+Notes from DBC CRUD Demo Video Series (5 videos)
+
+###############################################
+Sinatra CRUD App: Episode 1 - The Model
+###############################################
+
+1) github: best to create new branch for each segment, ex. "$ git checkout -b add-contact-model"
+2) bundle
+2) $ bundle exec rake -T
+3) $ bundle exec rake db:create
+4) $ be rake generate:migration NAME=create_contacts
+5) guides.rubyonrails.org > '3. writing migrations' > create tables
+6) create table in migration file:
+
+  class CreateContacts < ActiveRecord::Migration
+    def change
+      create_table :contacts do |t|
+      t.string :first_name
+      t.string :last_name
+      t.string :email, null: false
+      end
+    end
+  end
+
+7) $ be rake db:migrate > creates table, and schema.
+8) $ be rake generate:model NAME=Contact
+
+class Contact < ActiveRecord::Base
+  #Validation matching one in table.
+  validates :email, {presence: true}
+
+  #Virtual Attribute first+last name.
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+end
+
+9) Instantiating and saving new contact >
+10) $ be rake console
+11) $ Contact.new({ email: 'hello@hello.com' })
+12) $ contact = _ > contact.persisted? #=> false
+13) $ contact.valid? #=> true
+14) $ contact.save
+15) Error Messages: $ contact.errors.full_messages
+16) Check git status and difference content > $ git status > $ git diff --staged
+17) add > commit
+
+###############################################
+Sinatra CRUD App: Episode 1.5 - The Seeds (Faker Gem)
+###############################################
+
+Seed File:
+###########
+
+require 'faker'
+
+number_of_contacts_wanted = 10
+new_contacts_needed = number_of_contacts_wanted - Contact.count
+
+new_contacts_needed.times do
+  person = { first_name: Faker::Name.first_name, last_name: Faker::Name.last_name }
+  person[:email] = Faker::Internet.safe_email("#{person[:first_name]}.#{person[:last_name]}")
+
+  contact = Contact.new(person)
+  contact.save!
+end
+
+###########
+
+I. Visit Faker Website, then Create Seed File
+
+II. Test in Console
+1. $ be rake console
+2) $ require 'faker'
+3) $ Faker
+4) $ person = { first_name: Faker::Name.first_name, last_name: Faker::Name.last_name }
+5) $ person[:email] = Faker::Internet.safe_email("#{person[:first_name]}.#{person[:last_name]}")
+
+III. Create Contact from Console
+1) Copy and Paste irb result into new > contact = Contact.new(person)
+2) contact.valid?
+3) contact.save!
+4) contact.all
+
+IV. Continue with Seed File
+
+V. Run Seed File in Console
+1) $ be rake db:seed
+
+VI. Git Diff & Commit
+1) $ git status > $ git diff --staged
+2) add > commit
+
+###############################################
+Sinatra CRUD App: Episode 2 - The Controller
+###############################################
+
+1) $ git checkout -b contact-controller-branch
+2) $ be shotgun
+3) Open 'application.rb' to see RESTful outline.
+4) controllers/application.rb > Implement outline
+5) test each route
+localhost:9393/contacts
+localhost:9393/contacts/1
+localhost:9393/contacts/1/edit
+localhost:9393/contacts/new
+6) implement model to controller portion
+7) create at least one contact to work with:
+8) rake console
+9) Contact.new (to get fields available)
+10) Contact.create(first_name: "Mark", last_name: "S", email: "mark@example.com")
+11) Contact.last
+12) Update the Show Action (controllers/application.rb):
+  # show
+  get '/contacts/:id' do
+    puts params
+    "This is the contacts show action."
+  end
+
+13) Reload localhost:9393/contacts/1 (no output in browser, look in console)
+  - Expect: {"splat"=>[], "captures"=>["1"], "id"=>"1"}
+
+14) Update the Show Action:
+  # show
+  get '/contacts/:id' do
+    puts params
+    @contact = Contact.find(params[:id])
+    @contact.email
+    "This is the contacts show action."
+  end
+
+15) Reload localhost:9393/contacts/1 (expect 1 email in browser)
+16) Update the Index Action (controllers/application.rb):
+  # index
+  get '/contacts' do
+    # "This is the contacts index action."
+    @contacts = Contact.all
+    @contcts.map{|contact| contact.email}.to_s
+  end
+
+17) Reload localhost:9393/contacts (expect all emails in array in browser)
+
+###############################################
+Sinatra CRUD App: Episode 3 - The Index and Show Actions
+###############################################
+1) Add views/contacts/index.erb
+
+  <style>
+  form { display: inline; }
+  </style>
+
+  <h1>All Contacts</h1>
+  <div class="contacts">
+    <ul>
+      <li>ID_PLACEHOLDER - EMAIL_PLACEHOLDER - LINK_PLACEHOLDER</li>
+      <li>ID_PLACEHOLDER - EMAIL_PLACEHOLDER - LINK_PLACEHOLDER</li>
+      <li>ID_PLACEHOLDER - EMAIL_PLACEHOLDER - LINK_PLACEHOLDER</li>
+      <li>
+        12 - mark@example.com - <a href="/contacts/12">Show</a>
+      </li>
+    </ul>
+  </div>
+
+2) Add views/contacts/show.erb
+
+  <h1>Contact</h1>
+  <div class="contact-details">
+    <ul>
+      <li>id: ID_PLACEHOLDER</li>
+      <li>First Name: FIRST_NAME_PLACEHOLDER</li>
+      <li>Last Name: LAST_NAME_PLACEHOLDER</li>
+      <li>E-mail: EMAIL_NAME_PLACEHOLDER</li>
+    </ul>
+  </div>
+
+3) Update index controller (add: erb :'contacts/index')
+
+# index
+  get '/contacts' do
+    # "This is the contacts index action."
+    @contacts = Contact.all
+    @contcts.map{|contact| contact.email}.to_s
+    erb :'contacts/index'
+  end
+
+4) Update show controller (add: erb :'contacts/show')
+
+  # show
+  get '/contacts/:id' do
+    # "This is the contacts show action."
+    puts params
+    @contact = Contact.find(params[:id])
+    @contact.email
+    erb :'contacts/show'
+  end
+
+5) Reload localhost:9393/contacts/12 (expect erb static placeholders)
+
+6) Add instant variables in .erb file (for dynamic data)
+"ice cream cones" for <% %>
+"cinnamon sticks" for <%= %>
+
+  #show.erb
+  <h1>Contact</h1>
+  <div class="contact-details">
+    <ul>
+      <li>id: <%= @contact.id %></li>
+      <li>First Name: <%= @contact.first_name %></li>
+      <li>Last Name: <%= @contact.last_name %></li>
+      <li>E-mail: <%= @contact.email %></li>
+    </ul>
+  </div>
+
+  #index.erb
+  <style>
+  form { display: inline; }
+  </style>
+
+  <h1>All Contacts</h1>
+  <div class="contacts">
+    <ul>
+      <% @contacts.each do |contact| %>
+      <li>
+        <%= "#{contact.id} - #{contact.email}" %> -
+        <a href="/contacts/<%= contact.id %>">Show</a>
+        <%= erb :'contacts/_delete', layout: false, locals: { contact: contact }%>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+
+7) Housekeeping in Controllers (controllers/application.rb)
+
+# index
+get '/contacts' do
+  # "This is the contacts index action."
+  @contacts = Contact.all
+  ##@contacts.map{|contact| contact.email}.to_s (remove this!!!)
+  erb :'contacts/index'
+end
+
+# show
+get '/contacts/:id' do
+  # "This is the contacts show action."
+  # puts params ## (remove this)
+  @contact = Contact.find(params[:id])
+  # @contact.email ## (remove this)
+  erb :'contacts/show'
+end
+
+8) Add to github (status / diff)
+
+###############################################
+Sinatra CRUD App: Episode 4 - The New and Create Actions
+###############################################
+Note on Matching views to controllers on forms:
+"post" (verb) & "contacts" (route) need to match
+
+<form action="/contacts" method="post">
+
+# create
+post '/contacts' do
+  "This is the contacts create action."
+end
+
+
+1) Create views/contacts/new.erb file
+
+<style>form div { padding: 10px; }</style>
+
+<form action="/contacts" method="post">
+  <div>
+    <label for="contact_first_name">First Name</label>
+    <input id="contact_first_name" name="first_name" type="text" />
+  </div>
+  <div>
+    <label for="contact_last_name">Last Name</label>
+    <input id="contact_last_name" name="last_name" type="text" />
+  </div>
+  <div>
+    <label for="contact_email">Email</label>
+    <input id="contact_email" name="email" type="text" />
+  </div>
+  <div>
+    <input name="commit" type="submit" value="Create Contact">
+  </div>
+</form>
+
+2) Add erb method in controllers/application.rb (erb :'contacts/new')
+
+# new
+get '/contacts/new' do
+  "This is the contacts new action."
+  erb :'contacts/new'
+end
+
+3) Add puts params in controllers/application.rb
+
+# create
+post '/contacts' do
+  puts params
+  "This is the contacts create action."
+end
+
+4) Reload localhost:9393/contacts/new (expect create form)
+  - add/create new contact
+
+5) Check Server Log for params in console.
+  - expect {"first_name"=>"Sam", "last_name"=>"Smith", "email"=>"sam@example.com"}
+
+6) views/contacts/new.erb file - Change form to manipulate params (wrap 'contact')
+
+<style>form div { padding: 10px; }</style>
+
+<form action="/contacts" method="post">
+  <div>
+    <label for="contact_first_name">First Name</label>
+    <input id="contact_first_name" name="contact[first_name]" type="text" />
+  </div>
+  <div>
+    <label for="contact_last_name">Last Name</label>
+    <input id="contact_last_name" name="contact[last_name]" type="text" />
+  </div>
+  <div>
+    <label for="contact_email">Email</label>
+    <input id="contact_email" name="contact[email]" type="text" />
+  </div>
+  <div>
+    <input name="commit" type="submit" value="Create Contact">
+  </div>
+</form>
+
+7) Reload localhost:9393/contacts/new (expect create form)
+  - add/create new contact
+
+8) Check Server Log for params in console.
+  - expect nested data structure:
+  {"contact"=>{"first_name"=>"Sam", "last_name"=>"Smith", "email"=>"sam@example.com"},
+
+9) Implement the Create Action in Controller:
+  - use information passed to us in the params and available in the console.  Gives us the hash available at the contact key, which includes first_name, last_name, email.
+  - AR creates record based on info passed in params.
+  - then redirect.  Usually 2 options (index page, or to contact just created).
+
+  # create
+  post '/contacts' do
+    puts params
+    @contact = Contact.create(params[:contact])
+    redirect '/contacts'  ## Add this.
+    # "This is the contacts create action." ## remove this.
+  end
+
+10) Create new contact at localhost:9393/contacts/new
+  - expect to be rerouted to index page (all listings)
+
+11) Check Server Log for params in console.
+  - expect nested data structure:
+  {"contact"=>{"first_name"=>"Sam", "last_name"=>"Smith", "email"=>"sam@example.com"},
+
+12) Add to github (status / diff)
+
+###############################################
+Sinatra CRUD App: Episode 5 - The Edit and Update Actions
+###############################################
+
+1) Create views/contacts/edit.erb (modified version of views/contacts/new.erb)
+
+2) On 2nd line of form, add:
+<input name="_method" type="hidden" value="patch" />
+  - Rest will go in a partial.
+
+3) Create views/contacts/_form_fields.erb
+All info below it, goes in this partial (to be used on new.erb and edit.erb forms).
+*** <%= @contact.id %> will cause error if @contact is not declared already in edit route/controller.
+
+<style>form div { padding: 10px; }</style>
+
+<form action="/contacts/<%= @contact.id %>" method="post">
+  <input name="_method" type="hidden" value="patch" />
+  <%= erb :'contacts/_form_fields.erb', layout: false %>
+
+  <!-- ## Below info moved to partial (_form_fields.erb) -->
+  <!-- <div>
+    <label for="contact_first_name">First Name</label>
+    <input id="contact_first_name" name="contact[first_name]" type="text" />
+  </div>
+  <div>
+    <label for="contact_last_name">Last Name</label>
+    <input id="contact_last_name" name="contact[last_name]" type="text" />
+  </div>
+  <div>
+    <label for="contact_email">Email</label>
+    <input id="contact_email" name="contact[email]" type="text" />
+  </div> -->
+
+</form>
+
+4) Repeat process for contacts/new.erb
+
+<style>form div { padding: 10px; }</style>
+
+<form action="/contacts" method="post">
+  <%= erb :'contacts/_form_fields.erb', layout: false %>
+
+  <!-- ## Below info moved to partial (_form_fields.erb) -->
+  <!-- <div>
+    <label for="contact_first_name">First Name</label>
+    <input id="contact_first_name" name="contact[first_name]" type="text" />
+  </div>
+  <div>
+    <label for="contact_last_name">Last Name</label>
+    <input id="contact_last_name" name="contact[last_name]" type="text" />
+  </div>
+  <div>
+    <label for="contact_email">Email</label>
+    <input id="contact_email" name="contact[email]" type="text" />
+  </div> -->
+
+</form>
+
+5) Add @contact instance variable in edit route/controller.
+
+# edit
+get '/contacts/:id/edit' do
+  @contact = Contact.find(params[:id])
+  erb : 'contacts/edit'
+  # "This is the contacts edit action."
+end
+
+6) Create new contact at localhost:9393/contacts/new
+
+7) Edit contact at localhost:9393/contacts/15/edit
+
+8) Modify _form_fields.erb to add "value"
+  - Pre-fills data in edit form.
+
+  <div>
+    <label for="contact_first_name">First Name</label>
+    <input id="contact_first_name" name="contact[first_name]" type="text" value="<%= @contact.first_name %>" />
+  </div>
+  <div>
+    <label for="contact_last_name">Last Name</label>
+    <input id="contact_last_name" name="contact[last_name]" type="text" value="<%= @contact.last_name %>" />
+  </div>
+  <div>
+    <label for="contact_email">Email</label>
+    <input id="contact_email" name="contact[email]" type="text" value="<%= @contact.email %>" />
+  </div>
+  <div>
+    <input name="commit" type="submit" value="Create Contact">
+  </div>
+
+9) Initialize an empty @contact in new route/controller to prevent errors when creating new contact (due to partial _form_fields.erb using 'value' on edit form.)
+
+  # new
+  get '/contacts/new' do
+    @contacts = Contact.new  ## Prevents errors on Form Partial.
+    erb :'contacts/new'
+    # "This is the contacts new action."
+  end
+
+10) Modify patch route/controller
+
+  # update - patch
+  patch '/contacts/:id' do
+    puts params
+    @contact = Contact.find(params[:id])
+    @contact.update(params[:contact])
+    redirect "/contacts/#{@contact.id}"
+    # "This is the contacts update action."
+  end
+
+11) Edit contact at localhost:9393/contacts/15/edit
+
+12) #### Update Method (patch or put) ####
+
+  def update_contact
+    puts params
+    @contact = Contact.find(params[:id])
+    @contact.update(params[:contact])
+    redirect "/contacts/#{@contact.id}"
+  end
+
+  # update - patch
+  patch '/contacts/:id' do
+    update_contact
+    # puts params
+    # @contact = Contact.find(params[:id])
+    # @contact.update(params[:contact])
+    # redirect "/contacts/#{@contact.id}"
+    # "This is the contacts update action."
+  end
+
+  # update - put
+  put '/contacts/:id' do
+    update_contact
+    # "This is the contacts update action."
+  end
+
+13) Git (status / diff / add / commit)
+
+###############################################
+Sinatra CRUD App: Episode 6 - The Delete Action
+###############################################
+
+1) Create views/contacts/_delete.erb
+
+<form action="/contacts/<%= contact.id %>" method="post">
+  <input name="_method" type="hidden" value="delete" />
+  <input name="commit" type="submit" value="Delete" />
+</form>
+
+2) Implement delete controller/route.
+
+  # delete
+  delete '/contacts/:id' do
+    Contact.find(params[:id]).destroy!
+    redirect '/contacts'
+    # "This is the contacts delete action."
+  end
+
+3) Add CSS to index.erb:
+
+  <style>
+  form { display: inline; }
+  </style>
+
+  form input {
+    background:none!important;
+    border:none;
+    padding:0!important;
+    font: inherit;
+    color: webkit-link;
+    text-decoration: underline;
+    cursor: auto;
+  }
+
+  <h1>All Contacts</h1>
+  <div class="contacts">
+    <ul>
+      <% @contacts.each do |contact| %>
+      <li>
+        <%= "#{contact.id} - #{contact.email}" %> -
+        <a href="/contacts/<%= contact.id %>">Show</a>
+        <%= erb :'contacts/_delete', layout: false, locals: { contact: contact }%>
+      </li>
+      <% end %>
+    </ul>
+  </div>
+
+
+4) Git (status / diff / add / commit)
+
+###############################################
+Sinatra CRUD App: Episode 7 - The Error Handling
+###############################################
