@@ -106,10 +106,12 @@ class AppGenerator
       app/views/layout.erb
       config/database.rb
       config/environment.rb
+      lib/
       public/css/application.css
       public/css/bootstrap.min.css
       public/css/normalize.css
       public/css/style.css
+      public/img
       public/fonts/glyphicons-halflings-regular.eot
       public/fonts/glyphicons-halflings-regular.svg
       public/fonts/glyphicons-halflings-regular.ttf
@@ -118,12 +120,14 @@ class AppGenerator
       public/js/application.js
       public/js/bootstrap.min.js
       public/js/jquery.js
+      public/favicon.ico
       config.ru
       Gemfile
       Rakefile
-      x_notes_crud_demo.txt
-      x_steps.txt
-      x_setup_tips.txt)
+      x_setup/x_many_to_many.rb
+      x_setup/x_notes_crud_demo.txt
+      x_setup/x_steps.txt
+      x_setup/x_setup_tips.txt)
 
     unzip_file_paths.each do |file_path|
       src = "zip_out/#{file_path}"
