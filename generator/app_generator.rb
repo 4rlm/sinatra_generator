@@ -9,6 +9,7 @@ class AppGenerator
   def initialize
     @app_name = nil
     @mvc = []
+    @mvc_hashes = []
   end
 
   def starter
@@ -27,10 +28,27 @@ class AppGenerator
     puts "\n2) MVC:"
     mvc_string = gets.chomp
     @mvc = mvc_string.downcase.split(' ')
+
+
+    puts "\n3) Migration Files:\nEnter field name and type in following format:\nfirst_name, last_name, phone:integer, current:boolean, birthday:date\nDefault datatype will be string if not specified.\n\n"
+    get_migration_data_fields
+
+    #############################
     generate_mvch
-    puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
+    puts "Testing - Complete."
+    # puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
 
   end
+
+  def get_migration_data_fields
+    @mvc.each do |table|
+      puts "#{table}:"
+      data_fields_string = gets.chomp
+      data_fields_array = data_fields_string.split(", ")
+      @mvc_hashes << { table: table, fields: data_fields_array }
+    end
+  end
+
 
   def generate_app
     FileUtils.mkdir_p("../#{@app_name}/app/controllers")
@@ -40,19 +58,22 @@ class AppGenerator
     FileUtils.mkdir_p("../#{@app_name}/config")
     FileUtils.mkdir_p("../#{@app_name}/db/migrate")
     FileUtils.mkdir_p("../#{@app_name}/db/seeds")
+    FileUtils.mkdir_p("../#{@app_name}/lib")
     FileUtils.mkdir_p("../#{@app_name}/public/css")
     FileUtils.mkdir_p("../#{@app_name}/public/fonts")
+    FileUtils.mkdir_p("../#{@app_name}/public/img")
     FileUtils.mkdir_p("../#{@app_name}/public/js")
     FileUtils.mkdir_p("../#{@app_name}/spec")
+    FileUtils.mkdir_p("../#{@app_name}/x_setup")
   end
 
   def generate_mvch
     @mvc.each do |snake_case|
-      generate_controller_file(snake_case, snake_case.camelize)
-      generate_model_file(snake_case, snake_case.camelize)
+      # generate_controller_file(snake_case, snake_case.camelize)
+      # generate_model_file(snake_case, snake_case.camelize)
       generate_migration_file(snake_case, snake_case.camelize)
       # generate_view_file(snake_case, snake_case.camelize)
-      generate_helper_file(snake_case, snake_case.camelize)
+      # generate_helper_file(snake_case, snake_case.camelize)
     end
   end
 

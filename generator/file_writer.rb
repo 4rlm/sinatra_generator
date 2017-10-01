@@ -17,22 +17,42 @@ module FileWriter
     end
   end
 
+  def extract_mvc_hashes(snake_case)
+    selected_table_data_hash = @mvc_hashes.find(table: snake_case).first
+    fields = selected_table_data_hash[:fields]
+    table_fields = []
+
+    fields.each do |field|
+      field_pair = field.split(':')
+      f_key = field_pair[0]
+      f_type = field_pair[1]
+      # table_fields << "t.#{f_type} :#{f_key}\n"
+      # table_fields << "\t\t\tt.#{f_type} :#{f_key}\n"
+      table_fields << "t.#{f_type} :#{f_key}\n\t\t\t"
+    end
+
+    # table_fields[0] = table_fields[0][3..-1]
+    string_table_fields = table_fields.join("")
+  end
+
+
   def generate_migration_file(snake_case, migration_name)
     snake_plural = snake_case.pluralize
     camel_plural = migration_name.pluralize
     filename = "#{Time.now.strftime('%Y%m%d%L')}_create_#{snake_plural}"
-    # filename = "#{Time.now.strftime('%Y%m%d%H%M%S')}_create_#{snake_plural}"
     migration_path = "../#{@app_name}/db/migrate/#{filename}.rb"
     puts "Creating #{migration_path}"
 
+    string_table_fields = extract_mvc_hashes(snake_case)
+
     File.open(migration_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
+      f.write(<<-EOF.gsub(/^ {8}/, ''))
         class Create#{camel_plural} < ActiveRecord::Migration
           def change
-            # create_table :#{snake_plural} do |t|
-            #   t.string :name
-            #   t.timestamps null: false
-            # end
+            create_table :#{snake_plural} do |t|
+              #{string_table_fields}
+              t.timestamps null: false
+            end
           end
         end
       EOF
