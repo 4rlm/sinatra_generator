@@ -27,12 +27,12 @@ module FileWriter
 
     File.open(migration_path, 'w+') do |f|
       f.write(<<-EOF.strip_heredoc)
-        class Create#{camel_plural} < ActiveRecord::Migration[4.2]
+        class Create#{camel_plural} < ActiveRecord::Migration
           def change
-            create_table :#{snake_plural} do |t|
-
-              t.timestamps
-            end
+            # create_table :#{snake_plural} do |t|
+            #   t.string :name
+            #   t.timestamps null: false
+            # end
           end
         end
       EOF

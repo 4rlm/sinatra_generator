@@ -5,6 +5,7 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../../Gemfile', __FILE__)
 
 require 'bundler/setup' if File.exists?(ENV['BUNDLE_GEMFILE'])
 
+
 # Require gems we care about
 require 'rubygems'
 require 'uri'
@@ -19,10 +20,10 @@ require 'sinatra'
 require "sinatra/reloader" if development?
 require 'erb'
 
-## Adam's Gems ##
-require 'faker'
-require 'will_paginate'
-require 'will_paginate/active_record'
+# ## Adam's Gems ##
+# require 'faker'
+# require 'will_paginate'
+# require 'will_paginate/active_record'
 
 
 # Some helper constants for path-centric logic
