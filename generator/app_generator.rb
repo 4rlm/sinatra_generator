@@ -62,11 +62,11 @@ class AppGenerator
 
   def generate_mvch
     @mvc.each do |snake_case|
-      # generate_controller_file(snake_case, snake_case.camelize)
+      generate_controller_file(snake_case, snake_case.camelize)
       generate_model_file(snake_case, snake_case.camelize)
       generate_migration_file(snake_case, snake_case.camelize)
       # generate_view_file(snake_case, snake_case.camelize)
-      # generate_helper_file(snake_case, snake_case.camelize)
+      generate_helper_file(snake_case, snake_case.camelize)
     end
   end
 

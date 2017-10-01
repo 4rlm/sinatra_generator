@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-# ruby '~> 2.3.1'
+ruby '~> 2.2', '>= 2.2.2'
 
 # PostgreSQL driver
 gem 'pg', '~> 0.18'
@@ -9,8 +9,8 @@ gem 'pg', '~> 0.18'
 gem 'sinatra', '~>1.4'
 gem 'sinatra-contrib'
 
-gem 'activerecord', '~> 5.0'
-gem 'activesupport', '~> 5.0'
+gem 'activerecord', '~> 4.2'
+gem 'activesupport', '~> 4.2'
 
 # Use Thin for our web server
 gem 'thin'

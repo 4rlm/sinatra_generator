@@ -17,17 +17,17 @@ module FileWriter
     end
   end
 
-
   def generate_migration_file(snake_case, migration_name)
     snake_plural = snake_case.pluralize
     camel_plural = migration_name.pluralize
-    filename = "#{Time.now.strftime('%Y%m%d%H%M%S')}_create_#{snake_plural}"
+    filename = "#{Time.now.strftime('%Y%m%d%L')}_create_#{snake_plural}"
+    # filename = "#{Time.now.strftime('%Y%m%d%H%M%S')}_create_#{snake_plural}"
     migration_path = "../#{@app_name}/db/migrate/#{filename}.rb"
     puts "Creating #{migration_path}"
 
     File.open(migration_path, 'w+') do |f|
       f.write(<<-EOF.strip_heredoc)
-        class Create#{camel_plural} < ActiveRecord::Migration
+        class Create#{camel_plural} < ActiveRecord::Migration[4.2]
           def change
             create_table :#{snake_plural} do |t|
 
@@ -39,36 +39,43 @@ module FileWriter
     end
   end
 
+  def generate_helper_file(snake_case, helper_name)
+    helper_path = "../#{@app_name}/app/helpers/#{snake_case}.rb"
+    puts "Creating #{helper_path}"
 
-  # def generate_controller_file(snake_case, helper_name)
-  #   helper_path = "../#{@app_name}/app/helpers/#{snake_case}.rb"
-  #   puts "Creating #{helper_path}"
-  #
-  #   File.open(helper_path, 'w+') do |f|
-  #     f.write(<<-EOF.strip_heredoc)
-  #       class #{helper_name} < ApplicationRecord
-  #         # Remember to create a migration!
-  #       end
-  #     EOF
-  #   end
-  #
-  # end
+    File.open(helper_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+        module #{helper_name}Helper
 
+          def greeting
+            puts "In the #{helper_name}Helper module."
+          end
 
+        end
+        helpers #{helper_name}Helper
+      EOF
+    end
+  end
 
-  # def generate_helper_file(snake_case, controller_name)
-  #   controller_path = "../#{@app_name}/app/controllers/#{snake_case}.rb"
-  #   puts "Creating #{controller_path}"
-  #
-  #   File.open(controller_path, 'w+') do |f|
-  #     f.write(<<-EOF.strip_heredoc)
-  #       class #{controller_name} < ApplicationRecord
-  #         # Remember to create a migration!
-  #       end
-  #     EOF
-  #   end
-  #
-  # end
+  def generate_controller_file(snake_case, controller_name)
+    controller_path = "../#{@app_name}/app/controllers/#{snake_case}.rb"
+    puts "Creating #{controller_path}"
+
+    File.open(controller_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+        class #{controller_name}Controller < ApplicationController
+
+          get '/#{snake_case}' do
+            '#{snake_case}'
+            erb :'index'
+          end
+
+        end
+
+      EOF
+    end
+
+  end
 
 
   # def generate_view_file(snake_case, view_name)
