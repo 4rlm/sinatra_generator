@@ -3,6 +3,7 @@ require 'active_support/all'
 require 'pry'
 
 class AppGenerator
+  include FileWriter
   extend ActiveSupport::Concern
 
   def initialize
@@ -28,9 +29,11 @@ class AppGenerator
     puts "\n2) MVC:"
     mvc_string = gets.chomp
     @mvc = mvc_string.downcase.split(' ')
-    generate_models
-    generate_controllers
-    generate_helpers
+    # generate_models
+    # generate_controllers
+    # generate_helpers
+    # make_mod
+    generate_mvch
 
     # generate_views
     puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
@@ -51,35 +54,45 @@ class AppGenerator
     FileUtils.mkdir_p("../#{@app_name}/spec")
   end
 
-  def generate_models
+  # def generate_models
+  #   @mvc.each do |snake_case|
+  #     make_model_content(snake_case, snake_case.camelize)
+  #   end
+  # end
+
+  def generate_mvch
     @mvc.each do |snake_case|
-      path = "models/#{snake_case}.rb"
-      content = FileWriter.make_model_content(snake_case.camelize)
-      create_file(path, content)
+      # generate_controller_file(snake_case, snake_case.camelize)
+      generate_model_file(snake_case, snake_case.camelize)
+      generate_migration_file(snake_case, snake_case.camelize)
+      # generate_view_file(snake_case, snake_case.camelize)
+      # generate_helper_file(snake_case, snake_case.camelize)
     end
   end
 
-  def generate_controllers
-    @mvc.each do |snake_case|
-      path = "controllers/#{snake_case}_controller.rb"
-      content = FileWriter.make_controller_content(snake_case, snake_case.camelize)
-      create_file(path, content)
-    end
-  end
 
-  def generate_helpers
-    @mvc.each do |snake_case|
-      path = "helpers/#{snake_case}_helper.rb"
-      content = FileWriter.make_helper_content(snake_case.camelize)
-      create_file(path, content)
-    end
-  end
 
-  def generate_views
-    # content = "class #{camelized} < ActiveRecord::Base\n\n\nend"
-    # path = "./cool_appppp/app/views/#{snake_case}.rb"
-    # create_file(path, content)
-  end
+  # def generate_controllers
+  #   @mvc.each do |snake_case|
+  #     path = "controllers/#{snake_case}_controller.rb"
+  #     content = FileWriter.make_controller_content(snake_case, snake_case.camelize)
+  #     create_file(path, content)
+  #   end
+  # end
+
+  # def generate_helpers
+  #   @mvc.each do |snake_case|
+  #     path = "helpers/#{snake_case}_helper.rb"
+  #     content = FileWriter.make_helper_content(snake_case.camelize)
+  #     create_file(path, content)
+  #   end
+  # end
+
+  # def generate_views
+  #   # content = "class #{camelized} < ActiveRecord::Base\n\n\nend"
+  #   # path = "./cool_appppp/app/views/#{snake_case}.rb"
+  #   # create_file(path, content)
+  # end
 
   def create_file(path, content)
     File.open("../#{@app_name}/app/#{path}", "w+") { |file| file.write(content) }
@@ -120,6 +133,57 @@ class AppGenerator
     end
 
   end
+
+
+
+  ####################################
+
+
+  ################
+  def make_mod
+    # snake_case = 'tennis'
+    # model_name = snake_case.camelize
+    # model_filename = snake_case.underscore + '.rb'
+    # model_path = "../#{@app_name}/app/models/#{model_filename}"
+    #
+    # puts "Creating #{model_path}"
+    # binding.pry
+    # File.open(model_path, 'w+') do |f|
+    #   f.write(<<-EOF.strip_heredoc)
+    #     class #{model_name} < ApplicationRecord
+    #       # Remember to create a migration!
+    #     end
+    #   EOF
+    # end
+
+    # end
+      #
+      # desc "Create an empty migration in db/migrate, e.g., rake generate:migration NAME=create_users"
+      # task :migration do
+      #   unless ENV.has_key?('NAME')
+      #     raise "Must specificy migration name, e.g., rake generate:migration NAME=create_users"
+      #   end
+      #
+      #   name     = ENV['NAME'].camelize
+      #   filename = "%s_%s.rb" % [Time.now.strftime('%Y%m%d%H%M%S'), ENV['NAME'].underscore]
+      #   path     = APP_ROOT.join('db', 'migrate', filename)
+      #
+      #   if File.exist?(path)
+      #     raise "ERROR: File '#{path}' already exists"
+      #   end
+      #
+      #   puts "Creating #{path}"
+      #   File.open(path, 'w+') do |f|
+      #     f.write(<<-EOF.strip_heredoc)
+      #       class #{name} < ActiveRecord::Migration[5.0]
+      #         def change
+      #         end
+      #       end
+      #     EOF
+      #   end
+      # end
+  end
+
 
 
 end

@@ -1,2 +1,2 @@
-$ bundle install
-$ 
+$ be bundle install
+$ rake db:create
