@@ -36,7 +36,7 @@ class AppGenerator
     #############################
     generate_mvch
     puts "Testing - Complete."
-    # puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
+    puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
 
   end
 
@@ -69,11 +69,11 @@ class AppGenerator
 
   def generate_mvch
     @mvc.each do |snake_case|
-      # generate_controller_file(snake_case, snake_case.camelize)
-      # generate_model_file(snake_case, snake_case.camelize)
+      generate_controller_file(snake_case, snake_case.camelize)
+      generate_model_file(snake_case, snake_case.camelize)
       generate_migration_file(snake_case, snake_case.camelize)
       # generate_view_file(snake_case, snake_case.camelize)
-      # generate_helper_file(snake_case, snake_case.camelize)
+      generate_helper_file(snake_case, snake_case.camelize)
     end
   end
 
@@ -82,6 +82,7 @@ class AppGenerator
   # end
 
   def unzip_files
+
     unzip_file_paths = %w(
       app/controllers/application_controller.rb
       app/controllers/index.rb
@@ -89,12 +90,10 @@ class AppGenerator
       app/views/layout.erb
       config/database.rb
       config/environment.rb
-      lib/
       public/css/application.css
       public/css/bootstrap.min.css
       public/css/normalize.css
       public/css/style.css
-      public/img
       public/fonts/glyphicons-halflings-regular.eot
       public/fonts/glyphicons-halflings-regular.svg
       public/fonts/glyphicons-halflings-regular.ttf

@@ -1,2 +1,7 @@
-$ be bundle install
-$ rake db:create
+$ bundle
+$ be rake -T
+$ be rake db:create
+$ be rake generate:migration NAME=create_contacts
+$ be rake db:migrate
+$ be rake generate:model NAME=Contact
+$ be rake console

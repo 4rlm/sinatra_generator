@@ -10,7 +10,7 @@ module FileWriter
 
     File.open(model_path, 'w+') do |f|
       f.write(<<-EOF.strip_heredoc)
-        class #{model_name} < ApplicationRecord
+        class #{model_name} < ActiveRecord::Base
           # Remember to create a migration!
         end
       EOF
@@ -18,20 +18,30 @@ module FileWriter
   end
 
   def extract_mvc_hashes(snake_case)
-    selected_table_data_hash = @mvc_hashes.find(table: snake_case).first
+    selected_table_data_hash = @mvc_hashes.find { |hash| hash[:table] == snake_case }
+
     fields = selected_table_data_hash[:fields]
     table_fields = []
 
     fields.each do |field|
-      field_pair = field.split(':')
-      f_key = field_pair[0]
-      f_type = field_pair[1]
-      # table_fields << "t.#{f_type} :#{f_key}\n"
-      # table_fields << "\t\t\tt.#{f_type} :#{f_key}\n"
+      if field.include?(':')
+        field_key_and_type = field.split(':')
+        f_key = field_key_and_type[0]
+        f_type = field_key_and_type[1]
+      else
+        f_key = field
+        f_type = 'string'
+      end
       table_fields << "t.#{f_type} :#{f_key}\n\t\t\t"
     end
 
-    # table_fields[0] = table_fields[0][3..-1]
+    # fields.each do |field|
+    #   field_pair = field.split(':')
+    #   f_key = field_pair[0]
+    #   f_type = field_pair[1]
+    #   table_fields << "t.#{f_type} :#{f_key}\n\t\t\t"
+    # end
+
     string_table_fields = table_fields.join("")
   end
 
