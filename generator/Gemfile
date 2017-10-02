@@ -7,8 +7,13 @@ gem 'pg'
 gem 'sinatra', '~>1.4'
 gem 'sinatra-contrib'
 
-gem 'activesupport', '~>4.2.0'
-gem 'activerecord', '~>4.2.0'
+# gem "rails"
+# gem 'activesupport', '~>4.2.0'
+# gem 'activerecord', '~>4.2.0'
+gem 'activerecord', :require => 'active_record'
+gem 'sinatra-activerecord', :require => 'sinatra/activerecord'
+gem 'require_all' #=> Helps to load dependencies
+
 gem 'rake'
 gem 'pry'
 gem 'rack', '1.5.2'
@@ -28,3 +33,7 @@ end
 
 # Adam's Gems
 gem 'will_paginate', '~> 3.1.0'
+# gem 'thin'
+# gem "tux"
+# gem 'rack-flash3'
+# gem 'sinatra-flash'

@@ -35,13 +35,6 @@ module FileWriter
       table_fields << "t.#{f_type} :#{f_key}\n\t\t\t"
     end
 
-    # fields.each do |field|
-    #   field_pair = field.split(':')
-    #   f_key = field_pair[0]
-    #   f_type = field_pair[1]
-    #   table_fields << "t.#{f_type} :#{f_key}\n\t\t\t"
-    # end
-
     string_table_fields = table_fields.join("")
   end
 

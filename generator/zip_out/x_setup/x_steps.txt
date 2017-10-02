@@ -1,7 +1,31 @@
 $ bundle
 $ be rake -T
 $ be rake db:create
+
 $ be rake generate:migration NAME=create_contacts
-$ be rake db:migrate
 $ be rake generate:model NAME=Contact
+
+$ be rake db:migrate
 $ be rake console
+
+###################
+
+##### CREATE RAKE FILE - GET SCHEMA.RB #####
+http://jasonseifer.com/2010/04/06/rake-tutorial
+https://github.com/janko-m/sinatra-activerecord
+http://backend.turing.io/module2/lessons/intro_to_active_record_in_sinatra
+https://github.com/ruby/rake
+https://stackoverflow.com/questions/42847336/how-do-i-configure-sinatra-to-use-structure-sql-instead-of-schema-rb
+
+
+ActiveRecord::Base.connection.tables
+
+ActiveRecord::Base.connection.tables.each do |table|
+  next if table.match(/\Aschema_migrations\Z/)
+  klass = table.singularize.camelize.constantize
+  puts "#{klass.name} has #{klass.count} records"
+end
+
+db/schema.rb
+bundle exec rake db:schema:dump
+db:schema:load
