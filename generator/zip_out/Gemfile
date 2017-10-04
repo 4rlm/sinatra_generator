@@ -1,39 +1,27 @@
-source 'https://rubygems.org'
+# A sample Gemfile
+source "https://rubygems.org"
+
+# gem "rails"
+gem 'sinatra'
+gem 'activerecord', :require => 'active_record'
+gem 'sinatra-activerecord', :require => 'sinatra/activerecord'
+gem 'rake'
+gem 'require_all' #=> Helps to load dependencies
+gem 'thin'
+gem 'shotgun'
+gem 'pry'
+gem 'bcrypt'
+gem "tux"
+gem 'rack', '2.0.3'
+# gem 'rack-flash3'
+# gem 'sinatra-flash'
 
 # PostgreSQL driver
 gem 'pg'
+# gem 'sqlite3'
 
-# Sinatra driver
-gem 'sinatra', '~>1.4'
-gem 'sinatra-contrib'
-
-# gem "rails"
-# gem 'activesupport', '~>4.2.0'
-# gem 'activerecord', '~>4.2.0'
-gem 'activerecord', :require => 'active_record'
-gem 'sinatra-activerecord', :require => 'sinatra/activerecord'
-gem 'require_all' #=> Helps to load dependencies
-
-gem 'rake'
-gem 'pry'
-gem 'rack', '1.5.2'
-gem 'shotgun'
+## Adam's Gems ##
 gem 'faker'
-gem 'bcrypt'
 gem 'irbtools'
-
-group :test do
-  gem 'shoulda-matchers'
-  gem 'rack-test'
-  gem 'rspec', '~>3.0'
-  gem 'capybara'
-  gem 'database_cleaner'
-  gem 'factory_girl'
-end
-
-# Adam's Gems
+gem 'rspec', '~>3.0'
 gem 'will_paginate', '~> 3.1.0'
-# gem 'thin'
-# gem "tux"
-# gem 'rack-flash3'
-# gem 'sinatra-flash'

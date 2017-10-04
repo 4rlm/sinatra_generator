@@ -1,15 +1,10 @@
-# Require config/environment.rb
-require ::File.expand_path('../config/environment',  __FILE__)
+require_relative './config/environment'
 
-set :app_file, __FILE__
-
-configure do
-  # See: http://www.sinatrarb.com/faq.html#sessions
-  enable :sessions
-  set :session_secret, ENV['SESSION_SECRET'] || 'this is a secret shhhhh'
-
-  # Set the views to 
-  set :views, File.join(Sinatra::Application.root, "app", "views")
+if ActiveRecord::Migrator.needs_migration?
+  raise 'Migrations are pending. Run `rake db:migrate` to resolve the issue.'
 end
 
-run Sinatra::Application
+use Rack::MethodOverride
+use AccountsController
+use ContactsController
+run ApplicationController

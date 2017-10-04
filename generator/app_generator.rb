@@ -63,10 +63,10 @@ class AppGenerator
     FileUtils.mkdir_p("../#{@app_name}/db/migrate")
     FileUtils.mkdir_p("../#{@app_name}/db/seeds")
     FileUtils.mkdir_p("../#{@app_name}/lib")
-    FileUtils.mkdir_p("../#{@app_name}/public/css")
-    FileUtils.mkdir_p("../#{@app_name}/public/fonts")
-    FileUtils.mkdir_p("../#{@app_name}/public/img")
-    FileUtils.mkdir_p("../#{@app_name}/public/js")
+    FileUtils.mkdir_p("../#{@app_name}/public/assets/css")
+    FileUtils.mkdir_p("../#{@app_name}/public/assets/fonts")
+    FileUtils.mkdir_p("../#{@app_name}/public/assets/img")
+    FileUtils.mkdir_p("../#{@app_name}/public/assets/js")
     FileUtils.mkdir_p("../#{@app_name}/spec")
     FileUtils.mkdir_p("../#{@app_name}/x_setup")
   end
@@ -89,24 +89,67 @@ class AppGenerator
 
     unzip_file_paths = %w(
       app/controllers/application_controller.rb
-      app/controllers/index.rb
       app/views/index.erb
       app/views/layout.erb
-      config/database.rb
       config/environment.rb
-      public/css/application.css
-      public/css/bootstrap.min.css
-      public/css/normalize.css
-      public/css/style.css
-      public/fonts/glyphicons-halflings-regular.eot
-      public/fonts/glyphicons-halflings-regular.svg
-      public/fonts/glyphicons-halflings-regular.ttf
-      public/fonts/glyphicons-halflings-regular.woff
-      public/fonts/glyphicons-halflings-regular.woff2
-      public/js/application.js
-      public/js/bootstrap.min.js
-      public/js/jquery.js
-      public/favicon.ico
+      public/assets/bootstrap/css/bootstrap-theme.css
+      public/assets/bootstrap/css/bootstrap-theme.css.map
+      public/assets/bootstrap/css/bootstrap-theme.min.css
+      public/assets/bootstrap/css/bootstrap.css
+      public/assets/bootstrap/css/bootstrap.css.map
+      public/assets/bootstrap/css/bootstrap.min.css
+      public/assets/bootstrap/fonts/glyphicons-halflings-regular.eot
+      public/assets/bootstrap/fonts/glyphicons-halflings-regular.svg
+      public/assets/bootstrap/fonts/glyphicons-halflings-regular.ttf
+      public/assets/bootstrap/fonts/glyphicons-halflings-regular.woff
+      public/assets/bootstrap/fonts/glyphicons-halflings-regular.woff2
+      public/assets/bootstrap/js/bootstrap.js
+      public/assets/bootstrap/js/bootstrap.min.js
+      public/assets/bootstrap/js/npm.js
+      public/assets/css/form-elements.css
+      public/assets/css/style.css
+      public/assets/font-awesome/css/font-awesome.css
+      public/assets/font-awesome/css/font-awesome.min.css
+      public/assets/font-awesome/fonts/fontawesome-webfont.eot
+      public/assets/font-awesome/fonts/fontawesome-webfont.svg
+      public/assets/font-awesome/fonts/fontawesome-webfont.ttf
+      public/assets/font-awesome/fonts/fontawesome-webfont.woff
+      public/assets/font-awesome/fonts/fontawesome-webfont.woff2
+      public/assets/font-awesome/fonts/FontAwesome.otf
+      public/assets/font-awesome/HELP-US-OUT.txt
+      public/assets/font-awesome/less/animated.less
+      public/assets/font-awesome/less/bordered-pull.less
+      public/assets/font-awesome/less/core.less
+      public/assets/font-awesome/less/fixed-width.less
+      public/assets/font-awesome/less/font-awesome.less
+      public/assets/font-awesome/less/icons.less
+      public/assets/font-awesome/less/larger.less
+      public/assets/font-awesome/less/lists.less
+      public/assets/font-awesome/less/mixins.less
+      public/assets/font-awesome/less/path.less
+      public/assets/font-awesome/less/rotated-flipped.less
+      public/assets/font-awesome/less/stacked.less
+      public/assets/font-awesome/less/variables.less
+      public/assets/font-awesome/scss/_animated.scss
+      public/assets/font-awesome/scss/_bordered-pull.scss
+      public/assets/font-awesome/scss/_core.scss
+      public/assets/font-awesome/scss/_fixed-width.scss
+      public/assets/font-awesome/scss/_font-awesome.scss
+      public/assets/font-awesome/scss/_icons.scss
+      public/assets/font-awesome/scss/_larger.scss
+      public/assets/font-awesome/scss/_lists.scss
+      public/assets/font-awesome/scss/_mixins.scss
+      public/assets/font-awesome/scss/_path.scss
+      public/assets/font-awesome/scss/_rotated-flipped.scss
+      public/assets/font-awesome/scss/_stacked.scss
+      public/assets/font-awesome/scss/_variables.scss
+      public/assets/font-awesome/scss/font-awesome.scss
+      public/assets/img/backgrounds/1.jpg
+      public/assets/js/jquery-1.11.1.js
+      public/assets/js/jquery-1.11.1.min.js
+      public/assets/js/jquery.backstretch.min.js
+      public/assets/js/placeholder.js
+      public/assets/js/scripts.js
       config.ru
       Gemfile
       Rakefile
