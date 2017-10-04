@@ -1,9 +1,11 @@
 require_relative 'file_writer'
+# require_relative 'zipper'
 require 'active_support/all'
 require 'pry'
 
 class AppGenerator
   include FileWriter
+  # include Zipper
   extend ActiveSupport::Concern
 
   def initialize
@@ -15,6 +17,8 @@ class AppGenerator
   def starter
     prompt
     unzip_files
+    # zip_it
+    # zip(dir, zip_dir, remove_after = false)
   end
 
   def prompt
