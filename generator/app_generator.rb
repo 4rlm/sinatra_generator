@@ -78,18 +78,14 @@ class AppGenerator
       generate_model_file(snake_case, snake_case.camelize)
       generate_migration_file(snake_case, snake_case.camelize)
       generate_helper_file(snake_case, snake_case.camelize)
-      # generate_view_file(snake_case, snake_case.camelize)
+      generate_view_files(snake_case, snake_case.camelize)
     end
   end
 
   def generate_brains
-    # app/controllers/application_controller.rb
-    # generate_application_controller
-    # app/views/index.erb
-    # generate_application_index_view
-    # app/views/layout.erb
-    # generate_application_layout_view
-    # config.ru
+    generate_config_environment
+    generate_application_controller
+    generate_application_layout_view
     generate_config_ru
   end
 
@@ -100,10 +96,7 @@ class AppGenerator
   def unzip_files
 
     unzip_file_paths = %w(
-      app/controllers/application_controller.rb
       app/views/index.erb
-      app/views/layout.erb
-      config/environment.rb
       public/assets/bootstrap/css/bootstrap-theme.css
       public/assets/bootstrap/css/bootstrap-theme.css.map
       public/assets/bootstrap/css/bootstrap-theme.min.css
