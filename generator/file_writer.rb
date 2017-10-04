@@ -50,7 +50,7 @@ module FileWriter
 
     File.open(migration_path, 'w+') do |f|
       f.write(<<-EOF.gsub(/^ {8}/, ''))
-        class Create#{camel_plural} < ActiveRecord::Migration
+        class Create#{camel_plural} < ActiveRecord::Migration[5.0]
           def change
             create_table :#{snake_plural} do |t|
               #{string_table_fields}
@@ -98,6 +98,50 @@ module FileWriter
       EOF
     end
 
+  end
+
+  def generate_application_controller
+    @mvc
+    # app/controllers/application_controller.rb
+  end
+
+  def generate_application_index_view
+    @mvc
+    # app/views/index.erb
+  end
+
+  def generate_application_layout_view
+    @mvc
+    # app/views/layout.erb
+  end
+
+
+  def generate_config_ru  ## config.ru (in root)
+    config_ru_path = "../#{@app_name}/config.ru"
+
+    formatted_controllers = []
+    @mvc.each do |snake_case|
+      formatted_controllers << "use #{snake_case.pluralize.camelize}Controller\n"
+    end
+
+    puts "Creating #{config_ru_path}"
+
+    controllers_list = formatted_controllers.join("")
+
+    File.open(config_ru_path, 'w+') do |f|
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
+      require_relative './config/environment'
+
+      if ActiveRecord::Migrator.needs_migration?
+        raise 'Migrations are pending. Run `rake db:migrate` to resolve the issue.'
+      end
+
+      use Rack::MethodOverride
+      #{controllers_list}
+      run ApplicationController
+
+      EOF
+    end
   end
 
 

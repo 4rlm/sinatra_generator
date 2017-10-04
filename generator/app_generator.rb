@@ -17,6 +17,7 @@ class AppGenerator
   def starter
     prompt
     unzip_files
+    generate_brains
     # zip_it
     # zip(dir, zip_dir, remove_after = false)
   end
@@ -76,9 +77,20 @@ class AppGenerator
       generate_controller_file(snake_case, snake_case.camelize)
       generate_model_file(snake_case, snake_case.camelize)
       generate_migration_file(snake_case, snake_case.camelize)
-      # generate_view_file(snake_case, snake_case.camelize)
       generate_helper_file(snake_case, snake_case.camelize)
+      # generate_view_file(snake_case, snake_case.camelize)
     end
+  end
+
+  def generate_brains
+    # app/controllers/application_controller.rb
+    # generate_application_controller
+    # app/views/index.erb
+    # generate_application_index_view
+    # app/views/layout.erb
+    # generate_application_layout_view
+    # config.ru
+    generate_config_ru
   end
 
   # def create_file(path, content)
@@ -118,26 +130,26 @@ class AppGenerator
       public/assets/font-awesome/fonts/FontAwesome.otf
       public/assets/font-awesome/HELP-US-OUT.txt
       public/assets/font-awesome/less/animated.less
-      public/assets/font-awesome/less/bordered-pull.less
+      public/assets/font-awesome/less/bordered-pulled.less
       public/assets/font-awesome/less/core.less
       public/assets/font-awesome/less/fixed-width.less
       public/assets/font-awesome/less/font-awesome.less
       public/assets/font-awesome/less/icons.less
       public/assets/font-awesome/less/larger.less
-      public/assets/font-awesome/less/lists.less
+      public/assets/font-awesome/less/list.less
       public/assets/font-awesome/less/mixins.less
       public/assets/font-awesome/less/path.less
       public/assets/font-awesome/less/rotated-flipped.less
       public/assets/font-awesome/less/stacked.less
       public/assets/font-awesome/less/variables.less
       public/assets/font-awesome/scss/_animated.scss
-      public/assets/font-awesome/scss/_bordered-pull.scss
+      public/assets/font-awesome/scss/_bordered-pulled.scss
       public/assets/font-awesome/scss/_core.scss
       public/assets/font-awesome/scss/_fixed-width.scss
-      public/assets/font-awesome/scss/_font-awesome.scss
+      public/assets/font-awesome/scss/font-awesome.scss
       public/assets/font-awesome/scss/_icons.scss
       public/assets/font-awesome/scss/_larger.scss
-      public/assets/font-awesome/scss/_lists.scss
+      public/assets/font-awesome/scss/_list.scss
       public/assets/font-awesome/scss/_mixins.scss
       public/assets/font-awesome/scss/_path.scss
       public/assets/font-awesome/scss/_rotated-flipped.scss
@@ -150,7 +162,6 @@ class AppGenerator
       public/assets/js/jquery.backstretch.min.js
       public/assets/js/placeholder.js
       public/assets/js/scripts.js
-      config.ru
       Gemfile
       Rakefile
       x_setup/x_many_to_many.rb
