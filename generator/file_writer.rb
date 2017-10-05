@@ -175,39 +175,68 @@ module FileWriter
       f.write(<<-EOF.strip_heredoc)
         class #{camelize.pluralize}Controller < ApplicationController
 
-          # #{snake_plural} home / view all page.
+          # INDEX: #{snake_plural} view all.
           get '/#{snake_plural}' do
+            @#{snake_plural} = #{camelize}.order('updated_at ASC').limit(10)
             erb :'#{snake_plural}/index'
           end
 
-          # #{snake_plural} create/new.
-          post '/#{snake_plural}/new' do
-            erb :'#{snake_plural}/create'
+          # NEW: #{snake_plural} new
+          get '/#{snake_plural}/new' do
+            @#{snake_case} = #{camelize}.new  ## Prevents errors on Form Partial.
+            erb :'#{snake_plural}/new'
           end
 
-          # displays a single #{snake_case} detail page.
+          # CREATE:
+          post '/#{snake_plural}' do
+            @#{snake_case} = #{camelize}.create(params[:#{snake_case}])
+            redirect '/#{snake_plural}'
+          end
+
+          # SHOW: displays a single #{snake_case} detail page.
           get '/#{snake_plural}/:id' do
+            @#{snake_case} = #{camelize}.find(params[:id])
             erb :'#{snake_plural}/show'
           end
 
+          # EDIT:
           get '/#{snake_plural}/:id/edit' do
+            @#{snake_case} = #{camelize}.find(params[:id])
             erb :'#{snake_plural}/edit'
           end
 
-          patch '/#{snake_plural}/:id' do
+          ##### Update Method (patch or put) ####
+
+          # UPDATE: Method for patch and put
+          def update_#{snake_case}
+            @#{snake_case} = #{camelize}.find(params[:id])
+            @#{snake_case}.update(params[:#{snake_case}])
+            redirect "/#{snake_plural}/#\{@#{snake_case}.id}"
           end
 
-          delete '/#{snake_plural}/:id/delete' do
-            redirect_to_#{snake_plural}
+          # UPDATE: patch
+          patch '/#{snake_plural}/:id' do
+            update_#{snake_case}
+          end
+
+          # UPDATE: put
+          put '/#{snake_plural}/:id' do
+            update_#{snake_case}
+          end
+
+          #################################
+
+          # DELETE:
+          delete '/#{snake_plural}/:id' do
+            #{camelize}.find(params[:id]).destroy!
+            redirect '/#{snake_plural}'
           end
 
         end
 
       EOF
     end
-
   end
-
 
 
   def generate_config_ru  ## config.ru (in root)
@@ -219,7 +248,6 @@ module FileWriter
     end
 
     puts "Creating #{config_ru_path}"
-
     controllers_list = formatted_controllers.join("")
 
     File.open(config_ru_path, 'w+') do |f|
@@ -239,199 +267,281 @@ module FileWriter
   end
 
 
-
-
-
-
-  def generate_view_files(snake_case, view_name)
+  def generate_view_files(snake_case, camelized)
+    fields = @mvc_hashes.find(table: snake_case).first[:fields]
     snake_plural = snake_case.pluralize
+
     FileUtils.mkdir_p("../#{@app_name}/app/views/#{snake_plural}")
+    generate_index_view(snake_case, camelized, snake_plural, fields)
+    generate_new_view(snake_case, camelized, snake_plural)
+    generate_edit_view(snake_case, camelized, snake_plural)
+    generate_show_view(snake_case, camelized, snake_plural, fields)
+    generate_delete_view(snake_case, camelized, snake_plural)
+    generate_form_fields(snake_case, camelized, snake_plural, fields)
+  end
 
-    # index_view_path = "../#{@app_name}/app/views/#{snake_plural}/#{snake_plural}.erb"
-    # puts "Creating #{index_view_path}"
-    #
-    # File.open(index_view_path, 'w+') do |f|
-    #   f.write(<<-EOF.strip_heredoc)
-    #   <h1 style="color: white; margin: 30px 10px;">#{snake_plural} - View All</h1>
-    #
-    #     <div class="container" >
-    #       <div class="row">
-    #
-    #         <div class="col-sm-8">
-    #           <h1>#{snake_plural} - View All</h1>
-    #         </div> <!-- end col-sm-8-->
-    #
-    #         <div class="col-sm-4">
-    #           <h3>#{snake_plural} - View All</h3>
-    #         </div> <!-- end col-sm-4-->
-    #
-    #       </div><!-- end row -->
-    #     </div><!-- end container -->
-    #   EOF
-    # end
+  def generate_form_fields(snake_case, camelized, snake_plural, fields)
+    form_path = "../#{@app_name}/app/views/#{snake_plural}/_form_fields.erb"
+    puts "Creating #{form_path}"
 
-    view_files = ['index', 'create', 'show', 'edit']
-    view_files.each do |view_file|
-      view_path = "../#{@app_name}/app/views/#{snake_plural}/#{view_file}.erb"
-      puts "Creating #{view_path}"
+    html_block = []
+    fields.each do |field|
+      html_block << (<<-EOF.gsub(/^ {6}/, ''))
+      <div class="form-group">
+        <label for="#{field}" class="col-sm-2 control-label">#{field}</label>
+        <div class="col-sm-10">
+          <input class="form-control" id="#{field}" name="#{snake_case}[#{field}]" type="text" value="<%= @#{snake_case}.#{field} %>" placeholder="#{field}" />
+        </div>
+      </div>
 
-      File.open(view_path, 'w+') do |f|
-        f.write(<<-EOF.strip_heredoc)
-        <h1 style="color: white; margin: 30px 10px;">#{snake_plural} - #{view_file}</h1>
+      EOF
+    end
 
-          <div class="container" >
-            <div class="row">
+    html_block_string = html_block.join("")
+    File.open(form_path, 'w+') do |f|
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
+      <!-- # Duplicate info from new.erb and edit.erb forms goes in this partial. -->
 
-              <div class="col-sm-8">
-                <h1>#{snake_plural} - #{view_file}</h1>
-              </div> <!-- end col-sm-8-->
+      #{html_block_string}
 
-              <div class="col-sm-4">
-                <h3>#{snake_plural} - #{view_file}</h3>
-              </div> <!-- end col-sm-4-->
-
-            </div><!-- end row -->
-          </div><!-- end container -->
-        EOF
-      end
-
+      EOF
     end
 
   end
 
-  #
-  # def generate_application_layout_view
-  #   # <li><a href="/accounts">Accounts</a></li>
-  #   # <li><a href="/contacts">Contacts</a></li>
-  #
-  #   li_links = []
-  #   @mvc.each do |snake_case|
-  #     snake_plural = snake_case.pluralize
-  #     li_links << "<li><a href='/#{snake_plural}'>#{snake_plural}</a></li>\n\t\t\t\t\t\t\t"
-  #   end
-  #
-  #   app_name_string_capitalized = @app_name_string.split.map(&:capitalize).join(' ')
-  #
-  #   li_link_strings = li_links.join("")
-  #
-  #     layout_path = "../#{@app_name}/app/views/layout.erb"
-  #     puts "Creating #{layout_path}"
-  #
-  #     File.open(layout_path, 'w+') do |f|
-  #       f.write(<<-EOF.gsub(/^ {8}/, ''))
-  #       <!DOCTYPE html>
-  #       <html lang="en">
-  #
-  #         <head>
-  #
-  #           <meta charset="utf-8">
-  #           <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  #           <meta name="viewport" content="width=device-width, initial-scale=1">
-  #           <title>#{app_name_string_capitalized}</title>
-  #
-  #           <!-- CSS -->
-  #           <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
-  #           <link rel="stylesheet" href="../../../assets/bootstrap/css/bootstrap.min.css">
-  #           <link rel="stylesheet" href="../../../assets/font-awesome/css/font-awesome.min.css">
-  #           <link rel="stylesheet" href="../../../assets/css/form-elements.css">
-  #           <link rel="stylesheet" href="../../../assets/css/style.css">
-  #
-  #           <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  #           <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  #           <!--[if lt IE 9]>
-  #               <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-  #               <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-  #           <![endif] -->
-  #
-  #         </head>
-  #
-  #         <body>
-  #           <div>
-  #             <nav class="navbar navbar-default navbar-fixed-top">
-  #               <div class="container-fluid">
-  #                 <!-- Brand and toggle get grouped for better mobile display -->
-  #                 <div class="navbar-header">
-  #                   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-  #                     <span class="sr-only">Toggle navigation</span>
-  #                     <span class="icon-bar"></span>
-  #                     <span class="icon-bar"></span>
-  #                     <span class="icon-bar"></span>
-  #                   </button>
-  #                   <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> #{app_name_string_capitalized} </a>
-  #                 </div>
-  #
-  #                 <!-- Collect the nav links, forms, and other content for toggling -->
-  #                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-  #                   <ul class="nav navbar-nav">
-  #                     <!-- <li class="active"><a href="/">Home</a></li>
-  #                     <li class="active"><a href="/file_magic">Helper</a></li> -->
-  #                   </ul>
-  #
-  #                   <ul class="nav navbar-nav navbar-right">
-  #                     <li><a href="/#">Login</a></li>
-  #                     <li><a href="/#">Sign-Up</a></li>
-  #                     #{li_link_strings}
-  #                   </ul>
-  #
-  #                 </div><!-- /.navbar-collapse -->
-  #               </div><!-- /.container-fluid -->
-  #             </nav>
-  #
-  #           <%= yield %>
-  #
-  #           </div>
-  #
-  #           <!-- Footer -->
-  #           <footer>
-  #             <div class="container">
-  #               <div class="row">
-  #
-  #                 <div class="col-sm-8 col-sm-offset-2">
-  #                   <div class="footer-border"></div>
-  #                   <p>Developed by <a href="http://www.adambooth.com" target="_blank"><strong>Adam Booth</strong></a>
-  #                 </div>
-  #
-  #               </div>
-  #             </div>
-  #           </footer>
-  #
-  #           <!-- Javascript -->
-  #           <script src="../../../assets/js/jquery-1.11.1.min.js"></script>
-  #           <script src="../../../assets/bootstrap/js/bootstrap.min.js"></script>
-  #           <script src="../../../assets/js/jquery.backstretch.min.js"></script>
-  #           <script src="../../../assets/js/scripts.js"></script>
-  #
-  #           <!--[if lt IE 10]>
-  #               <script src="assets/js/placeholder.js"></script>
-  #           <![endif]-->
-  #
-  #         </body>
-  #
-  #       </html>
-  #
-  #
-  #       EOF
-  #     end
-  # end
-  #
 
 
+  def generate_new_view(snake_case, camelized, snake_plural)
+    view_path = "../#{@app_name}/app/views/#{snake_plural}/new.erb"
+    puts "Creating #{view_path}"
+
+    File.open(view_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+      <div class="">
+
+        <div class="erb_header">
+          <h2>Create New #{camelized}</h2>
+        </div>
+
+        <form class="form-horizontal" action="/#{snake_plural}" method="post">
+
+          <!-- ## Form content moved to partial (_form_fields.erb) -->
+          <%= erb :'#{snake_plural}/_form_fields'%>
+
+          <button class="btn btn-success" name="commit" type="submit">Submit New #{camelized}</button>
+        </form>
+
+      </div>
+
+      EOF
+    end
+
+  end
+
+  def generate_edit_view(snake_case, camelized, snake_plural)
+    view_path = "../#{@app_name}/app/views/#{snake_plural}/edit.erb"
+    puts "Creating #{view_path}"
+
+    File.open(view_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+      <div class="">
+
+        <div class="erb_header">
+          <h2>Edit #{camelized}</h2>
+        </div>
+
+        <form class="form-horizontal" action="/#{snake_plural}/<%= @#{snake_case}.id %>" method="post">
+
+          <div class="form-group">
+            <input class="form-control" name="_method" type="hidden" value="patch" />
+          </div>
+
+          <!-- ## Form content moved to partial (_form_fields.erb) -->
+          <%= erb :'#{snake_plural}/_form_fields', layout: false %>
+
+          <button class="btn btn-success" name="commit" type="submit">Update #{camelized}</button>
+        </form>
+
+      </div>
+      EOF
+    end
+
+  end
+
+  def generate_show_view(snake_case, camelized, snake_plural, fields)
+    view_path = "../#{@app_name}/app/views/#{snake_plural}/show.erb"
+    puts "Creating #{view_path}"
+
+    th_blocks = []
+    fields.each do |field|
+      th_blocks << (<<-EOF.gsub(/^ {6}/, ''))
+      <th class="w-small">#{field}</th>
+
+      EOF
+    end
+
+
+    td_blocks = []
+    fields.each do |field|
+      td_blocks << (<<-EOF.gsub(/^ {6}/, ''))
+      <td><%= @#{snake_case}.#{field} %></td>
+
+      EOF
+    end
+
+    th_block_strings = th_blocks.join('')
+    td_block_strings = td_blocks.join('')
+
+    File.open(view_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+      <div class="">
+
+        <div class="erb_header">
+          <h2>Show #{camelized}</h2>
+        </div>
+
+        <table class="table table-bordered table-hover table-striped">
+          <tr>
+            <th class="w-small">ID</th>
+      #{th_block_strings}
+            <th class="w-small">Posted/Updated</th>
+          </tr>
+
+          <tr>
+            <td><%= @#{snake_case}.id %></td>
+      #{td_block_strings}
+            <td><%= @#{snake_case}.updated_at %></td>
+          </tr>
+
+        </table>
+
+      </div>
+
+      EOF
+    end
+
+  end
+
+
+  def generate_index_view(snake_case, camelized, snake_plural, fields)
+    view_path = "../#{@app_name}/app/views/#{snake_plural}/index.erb"
+    puts "Creating #{view_path}"
+
+    th_blocks = []
+    fields.each do |field|
+      th_blocks << (<<-EOF.gsub(/^ {6}/, ''))
+      <th>#{field}</th>
+
+      EOF
+    end
+
+    td_blocks = []
+    fields.each do |field|
+      td_blocks << (<<-EOF.gsub(/^ {6}/, ''))
+      <td><%= @#{snake_case}.#{field} %></td>
+
+      EOF
+    end
+
+    th_block_strings = th_blocks.join('')
+    td_block_strings = td_blocks.join('')
+
+    File.open(view_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+      <h1>On INDEX - #{snake_plural} ERB</h1>
+
+      <table class="table table-bordered table-striped table-hover">
+        <tr>
+          <th>ID</th>
+      #{th_block_strings}
+          <th>Updated</th>
+
+          <th colspan="3">Manage</th>
+        </tr>
+        <% @#{snake_plural}.each do |#{snake_case}|%>
+        <tr>
+          <td><%= #{snake_case}.id%></td>
+      #{td_block_strings}
+          <td><%= #{snake_case}.updated_at.strftime('%x')%></td>
+
+          <td>
+            <button class="btn btn-default" name="commit" type="submit"><a href="/#{snake_plural}/<%= #{snake_case}.id %>">
+              <span class="glyphicon glyphicon-folder-open"></span>
+            </a></button>
+          </td>
+
+          <td>
+            <button class="btn btn-default" name="commit" type="submit"><a href="/#{snake_plural}/<%= #{snake_case}.id %>/edit">
+              <span class="glyphicon glyphicon-edit"></span>
+            </a></button>
+          </td>
+
+          <td><%= erb :'#{snake_plural}/_delete', layout: true, locals: { #{snake_case}: #{snake_case} }%></td>
+
+        </tr>
+        <% end %>
+      </table>
+
+
+      <div class="digg_pagination">
+        <%#= will_paginate @#{snake_plural}, renderer: BootstrapPagination::Sinatra %>
+        <%#= will_paginate @#{snake_plural} %>
+      </div>
+
+      EOF
+    end
+
+  end
+
+  def generate_delete_view(snake_case, camelized, snake_plural)
+    view_path = "../#{@app_name}/app/views/#{snake_plural}/_delete.erb"
+    puts "Creating #{view_path}"
+
+    File.open(view_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+      <form action="/#{snake_plural}/<%= #{snake_case}.id %>" method="post">
+        <input name="_method" type="hidden" value="delete" />
+        <button class="btn btn-danger" name="commit" type="submit"><span class="glyphicon glyphicon-trash"></span></button>
+      </form>
+      EOF
+    end
+
+  end
+
+
+  ################
 
   def generate_application_layout_view
     li_links = []
+    # @mvc.each do |snake_case|
+    #   snake_plural = snake_case.pluralize
+    #   li_links << "<li><a href='/#{snake_plural}'>#{snake_plural}</a></li>\n\t\t\t\t\t\t\t"
+    #   li_links << "<li><a href='/#{snake_plural}'>#{snake_plural}</a></li>\n\t\t\t\t\t\t\t"
+    # end
+
     @mvc.each do |snake_case|
       snake_plural = snake_case.pluralize
-      li_links << "<li><a href='/#{snake_plural}'>#{snake_plural}</a></li>\n\t\t\t\t\t\t\t"
+      camelized = snake_case.camelize
+      li_links <<  (<<-EOF.gsub(/^ {6}/, ''))
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">#{camelized} <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href='/#{snake_plural}'>View #{camelized}</a></li>
+          <li><a href='/#{snake_plural}/new'>New #{camelized}</a></li>
+        </ul>
+      </li>
+
+      EOF
     end
 
     app_name_string_capitalized = @app_name_string.split.map(&:capitalize).join(' ')
+    # li_link_strings = li_links.map {|string| "#{string}\n"}
     li_link_strings = li_links.join("")
     layout_path = "../#{@app_name}/app/views/layout.erb"
     puts "Creating #{layout_path}"
 
     File.open(layout_path, 'w+') do |f|
-      f.write(<<-EOF.gsub(/^ {8}/, ''))
-
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
       <!DOCTYPE html>
       <html lang="en">
 
@@ -484,14 +594,14 @@ module FileWriter
                   <ul class="nav navbar-nav navbar-right">
                     <li><a href="/#">Login</a></li>
                     <li><a href="/#">Sign-Up</a></li>
-                    #{li_link_strings}
+
+      #{li_link_strings}
+
                   </ul>
 
                 </div><!-- /.navbar-collapse -->
               </div><!-- /.container-fluid -->
             </nav>
-
-
           </div>
 
           <div class='container erb-wrapper text-center' id='main'>
@@ -509,14 +619,13 @@ module FileWriter
             <%= yield %>
           </div>
 
-
           <!-- Footer -->
           <div class="footer text-center">
             <h4>Developed by The Austonites &copy 2017</h4>
           </div>
 
           <!-- Javascript -->
-          <!-- <script src="../../../assets/js/jquery-1.11.1.min.js"></script> -->
+          <script src="../../../assets/js/jquery-1.11.1.min.js"></script>
           <script src="../../../assets/bootstrap/js/bootstrap.min.js"></script>
           <!-- <script src="../../../assets/js/jquery.backstretch.min.js"></script> -->
           <!-- <script src="../../../assets/js/scripts.js"></script> -->
@@ -528,8 +637,6 @@ module FileWriter
         </body>
 
       </html>
-
-
 
       EOF
     end
