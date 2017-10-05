@@ -81,49 +81,6 @@ module FileWriter
     end
   end
 
-  def generate_controller_file(snake_case, camelize)
-    snake_plural = snake_case.pluralize
-
-    controller_path = "../#{@app_name}/app/controllers/#{snake_plural}_controller.rb"
-    puts "Creating #{controller_path}"
-
-    File.open(controller_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
-        class #{camelize.pluralize}Controller < ApplicationController
-
-          # #{snake_plural} home / view all page.
-          get '/#{snake_plural}' do
-            erb :'#{snake_plural}/#{snake_plural}'
-          end
-
-          # #{snake_plural} create/new.
-          post '/#{snake_plural}/new' do
-            erb :'#{snake_plural}/create_#{snake_case}'
-          end
-
-          # displays a single #{snake_case} detail page.
-          get '/#{snake_plural}/:id' do
-            erb :'#{snake_plural}/show_#{snake_case}'
-          end
-
-          get '/#{snake_plural}/:id/edit' do
-            erb :'#{snake_plural}/edit_#{snake_case}'
-          end
-
-          patch '/#{snake_plural}/:id' do
-          end
-
-          delete '/#{snake_plural}/:id/delete' do
-            redirect_to_#{snake_plural}
-          end
-
-        end
-
-      EOF
-    end
-
-  end
-
   def generate_config_environment
     environment_path = "../#{@app_name}/config/environment.rb"
     puts "Creating #{environment_path}"
@@ -208,6 +165,51 @@ module FileWriter
   end
 
 
+  def generate_controller_file(snake_case, camelize)
+    snake_plural = snake_case.pluralize
+
+    controller_path = "../#{@app_name}/app/controllers/#{snake_plural}_controller.rb"
+    puts "Creating #{controller_path}"
+
+    File.open(controller_path, 'w+') do |f|
+      f.write(<<-EOF.strip_heredoc)
+        class #{camelize.pluralize}Controller < ApplicationController
+
+          # #{snake_plural} home / view all page.
+          get '/#{snake_plural}' do
+            erb :'#{snake_plural}/index'
+          end
+
+          # #{snake_plural} create/new.
+          post '/#{snake_plural}/new' do
+            erb :'#{snake_plural}/create'
+          end
+
+          # displays a single #{snake_case} detail page.
+          get '/#{snake_plural}/:id' do
+            erb :'#{snake_plural}/show'
+          end
+
+          get '/#{snake_plural}/:id/edit' do
+            erb :'#{snake_plural}/edit'
+          end
+
+          patch '/#{snake_plural}/:id' do
+          end
+
+          delete '/#{snake_plural}/:id/delete' do
+            redirect_to_#{snake_plural}
+          end
+
+        end
+
+      EOF
+    end
+
+  end
+
+
+
   def generate_config_ru  ## config.ru (in root)
     config_ru_path = "../#{@app_name}/config.ru"
 
@@ -237,36 +239,40 @@ module FileWriter
   end
 
 
+
+
+
+
   def generate_view_files(snake_case, view_name)
     snake_plural = snake_case.pluralize
     FileUtils.mkdir_p("../#{@app_name}/app/views/#{snake_plural}")
 
-    index_view_path = "../#{@app_name}/app/views/#{snake_plural}/#{snake_plural}.erb"
-    puts "Creating #{index_view_path}"
+    # index_view_path = "../#{@app_name}/app/views/#{snake_plural}/#{snake_plural}.erb"
+    # puts "Creating #{index_view_path}"
+    #
+    # File.open(index_view_path, 'w+') do |f|
+    #   f.write(<<-EOF.strip_heredoc)
+    #   <h1 style="color: white; margin: 30px 10px;">#{snake_plural} - View All</h1>
+    #
+    #     <div class="container" >
+    #       <div class="row">
+    #
+    #         <div class="col-sm-8">
+    #           <h1>#{snake_plural} - View All</h1>
+    #         </div> <!-- end col-sm-8-->
+    #
+    #         <div class="col-sm-4">
+    #           <h3>#{snake_plural} - View All</h3>
+    #         </div> <!-- end col-sm-4-->
+    #
+    #       </div><!-- end row -->
+    #     </div><!-- end container -->
+    #   EOF
+    # end
 
-    File.open(index_view_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
-      <h1 style="color: white; margin: 30px 10px;">#{snake_plural} - View All</h1>
-
-        <div class="container" >
-          <div class="row">
-
-            <div class="col-sm-8">
-              <h1>#{snake_plural} - View All</h1>
-            </div> <!-- end col-sm-8-->
-
-            <div class="col-sm-4">
-              <h3>#{snake_plural} - View All</h3>
-            </div> <!-- end col-sm-4-->
-
-          </div><!-- end row -->
-        </div><!-- end container -->
-      EOF
-    end
-
-    view_files = ['create', 'show', 'edit']
+    view_files = ['index', 'create', 'show', 'edit']
     view_files.each do |view_file|
-      view_path = "../#{@app_name}/app/views/#{snake_plural}/#{view_file}_#{snake_case}.erb"
+      view_path = "../#{@app_name}/app/views/#{snake_plural}/#{view_file}.erb"
       puts "Creating #{view_path}"
 
       File.open(view_path, 'w+') do |f|
@@ -292,6 +298,12 @@ module FileWriter
     end
 
   end
+
+
+
+
+
+
 
 
   def generate_application_layout_view
