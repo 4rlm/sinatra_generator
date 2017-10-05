@@ -299,11 +299,125 @@ module FileWriter
 
   end
 
+  #
+  # def generate_application_layout_view
+  #   # <li><a href="/accounts">Accounts</a></li>
+  #   # <li><a href="/contacts">Contacts</a></li>
+  #
+  #   li_links = []
+  #   @mvc.each do |snake_case|
+  #     snake_plural = snake_case.pluralize
+  #     li_links << "<li><a href='/#{snake_plural}'>#{snake_plural}</a></li>\n\t\t\t\t\t\t\t"
+  #   end
+  #
+  #   app_name_string_capitalized = @app_name_string.split.map(&:capitalize).join(' ')
+  #
+  #   li_link_strings = li_links.join("")
+  #
+  #     layout_path = "../#{@app_name}/app/views/layout.erb"
+  #     puts "Creating #{layout_path}"
+  #
+  #     File.open(layout_path, 'w+') do |f|
+  #       f.write(<<-EOF.gsub(/^ {8}/, ''))
+  #       <!DOCTYPE html>
+  #       <html lang="en">
+  #
+  #         <head>
+  #
+  #           <meta charset="utf-8">
+  #           <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  #           <meta name="viewport" content="width=device-width, initial-scale=1">
+  #           <title>#{app_name_string_capitalized}</title>
+  #
+  #           <!-- CSS -->
+  #           <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+  #           <link rel="stylesheet" href="../../../assets/bootstrap/css/bootstrap.min.css">
+  #           <link rel="stylesheet" href="../../../assets/font-awesome/css/font-awesome.min.css">
+  #           <link rel="stylesheet" href="../../../assets/css/form-elements.css">
+  #           <link rel="stylesheet" href="../../../assets/css/style.css">
+  #
+  #           <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  #           <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  #           <!--[if lt IE 9]>
+  #               <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  #               <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+  #           <![endif] -->
+  #
+  #         </head>
+  #
+  #         <body>
+  #           <div>
+  #             <nav class="navbar navbar-default navbar-fixed-top">
+  #               <div class="container-fluid">
+  #                 <!-- Brand and toggle get grouped for better mobile display -->
+  #                 <div class="navbar-header">
+  #                   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+  #                     <span class="sr-only">Toggle navigation</span>
+  #                     <span class="icon-bar"></span>
+  #                     <span class="icon-bar"></span>
+  #                     <span class="icon-bar"></span>
+  #                   </button>
+  #                   <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> #{app_name_string_capitalized} </a>
+  #                 </div>
+  #
+  #                 <!-- Collect the nav links, forms, and other content for toggling -->
+  #                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+  #                   <ul class="nav navbar-nav">
+  #                     <!-- <li class="active"><a href="/">Home</a></li>
+  #                     <li class="active"><a href="/file_magic">Helper</a></li> -->
+  #                   </ul>
+  #
+  #                   <ul class="nav navbar-nav navbar-right">
+  #                     <li><a href="/#">Login</a></li>
+  #                     <li><a href="/#">Sign-Up</a></li>
+  #                     #{li_link_strings}
+  #                   </ul>
+  #
+  #                 </div><!-- /.navbar-collapse -->
+  #               </div><!-- /.container-fluid -->
+  #             </nav>
+  #
+  #           <%= yield %>
+  #
+  #           </div>
+  #
+  #           <!-- Footer -->
+  #           <footer>
+  #             <div class="container">
+  #               <div class="row">
+  #
+  #                 <div class="col-sm-8 col-sm-offset-2">
+  #                   <div class="footer-border"></div>
+  #                   <p>Developed by <a href="http://www.adambooth.com" target="_blank"><strong>Adam Booth</strong></a>
+  #                 </div>
+  #
+  #               </div>
+  #             </div>
+  #           </footer>
+  #
+  #           <!-- Javascript -->
+  #           <script src="../../../assets/js/jquery-1.11.1.min.js"></script>
+  #           <script src="../../../assets/bootstrap/js/bootstrap.min.js"></script>
+  #           <script src="../../../assets/js/jquery.backstretch.min.js"></script>
+  #           <script src="../../../assets/js/scripts.js"></script>
+  #
+  #           <!--[if lt IE 10]>
+  #               <script src="assets/js/placeholder.js"></script>
+  #           <![endif]-->
+  #
+  #         </body>
+  #
+  #       </html>
+  #
+  #
+  #       EOF
+  #     end
+  # end
+  #
+
+
 
   def generate_application_layout_view
-    # <li><a href="/accounts">Accounts</a></li>
-    # <li><a href="/contacts">Contacts</a></li>
-
     li_links = []
     @mvc.each do |snake_case|
       snake_plural = snake_case.pluralize
@@ -311,108 +425,116 @@ module FileWriter
     end
 
     app_name_string_capitalized = @app_name_string.split.map(&:capitalize).join(' ')
-
     li_link_strings = li_links.join("")
+    layout_path = "../#{@app_name}/app/views/layout.erb"
+    puts "Creating #{layout_path}"
 
-      layout_path = "../#{@app_name}/app/views/layout.erb"
-      puts "Creating #{layout_path}"
+    File.open(layout_path, 'w+') do |f|
+      f.write(<<-EOF.gsub(/^ {8}/, ''))
 
-      File.open(layout_path, 'w+') do |f|
-        f.write(<<-EOF.gsub(/^ {8}/, ''))
-        <!DOCTYPE html>
-        <html lang="en">
+      <!DOCTYPE html>
+      <html lang="en">
 
-          <head>
+        <head>
 
-            <meta charset="utf-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>#{app_name_string_capitalized}</title>
+          <meta charset="utf-8">
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Austin City Guide</title>
 
-            <!-- CSS -->
-            <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
-            <link rel="stylesheet" href="../../../assets/bootstrap/css/bootstrap.min.css">
-            <link rel="stylesheet" href="../../../assets/font-awesome/css/font-awesome.min.css">
-            <link rel="stylesheet" href="../../../assets/css/form-elements.css">
-            <link rel="stylesheet" href="../../../assets/css/style.css">
+          <!-- CSS -->
+          <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+          <link rel="stylesheet" href="../../../assets/bootstrap/css/bootstrap.min.css">
+          <link rel="stylesheet" href="../../../assets/font-awesome/css/font-awesome.min.css">
+          <link rel="stylesheet" href="../../../assets/css/form-elements.css">
+          <link rel="stylesheet" href="../../../assets/css/style.css">
 
-            <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-            <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-            <!--[if lt IE 9]>
-                <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-                <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-            <![endif] -->
+          <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+          <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+          <!--[if lt IE 9]>
+              <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+              <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+          <![endif] -->
 
-          </head>
+        </head>
 
-          <body>
-            <div>
-              <nav class="navbar navbar-default navbar-fixed-top">
-                <div class="container-fluid">
-                  <!-- Brand and toggle get grouped for better mobile display -->
-                  <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                      <span class="sr-only">Toggle navigation</span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> #{app_name_string_capitalized} </a>
-                  </div>
-
-                  <!-- Collect the nav links, forms, and other content for toggling -->
-                  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                      <!-- <li class="active"><a href="/">Home</a></li>
-                      <li class="active"><a href="/file_magic">Helper</a></li> -->
-                    </ul>
-
-                    <ul class="nav navbar-nav navbar-right">
-                      <li><a href="/#">Login</a></li>
-                      <li><a href="/#">Sign-Up</a></li>
-                      #{li_link_strings}
-                    </ul>
-
-                  </div><!-- /.navbar-collapse -->
-                </div><!-- /.container-fluid -->
-              </nav>
-
-            <%= yield %>
-
-            </div>
-
-            <!-- Footer -->
-            <footer>
-              <div class="container">
-                <div class="row">
-
-                  <div class="col-sm-8 col-sm-offset-2">
-                    <div class="footer-border"></div>
-                    <p>Developed by <a href="http://www.adambooth.com" target="_blank"><strong>Adam Booth</strong></a>
-                  </div>
-
+        <body>
+          <div>
+            <nav class="navbar navbar-default navbar-fixed-top">
+              <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="navbar" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> Austin City Guide </a>
                 </div>
-              </div>
-            </footer>
 
-            <!-- Javascript -->
-            <script src="../../../assets/js/jquery-1.11.1.min.js"></script>
-            <script src="../../../assets/bootstrap/js/bootstrap.min.js"></script>
-            <script src="../../../assets/js/jquery.backstretch.min.js"></script>
-            <script src="../../../assets/js/scripts.js"></script>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div id="navbar" class="collapse navbar-collapse">
 
-            <!--[if lt IE 10]>
-                <script src="assets/js/placeholder.js"></script>
-            <![endif]-->
+                  <ul class="nav navbar-nav">
+                    <!-- <li class="active"><a href="/">Home</a></li>
+                    <li class="active"><a href="/file_magic">Helper</a></li> -->
+                  </ul>
 
-          </body>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li><a href="/#">Login</a></li>
+                    <li><a href="/#">Sign-Up</a></li>
+                    #{li_link_strings}
+                  </ul>
 
-        </html>
+                </div><!-- /.navbar-collapse -->
+              </div><!-- /.container-fluid -->
+            </nav>
 
 
-        EOF
-      end
+          </div>
+
+          <div class='container erb-wrapper text-center' id='main'>
+            <% if @errors %>
+              <ul>
+                <% @errors.each do |error| %>
+                  <li class="error-message"><%= error %></li>
+                <% end %>
+              </ul>
+              <%# else %>
+              <!-- <ul>
+                <li class="success-message">Success!</li>
+              </ul> -->
+            <% end %>
+            <%= yield %>
+          </div>
+
+
+          <!-- Footer -->
+          <div class="footer text-center">
+            <h4>Developed by The Austonites &copy 2017</h4>
+          </div>
+
+          <!-- Javascript -->
+          <!-- <script src="../../../assets/js/jquery-1.11.1.min.js"></script> -->
+          <script src="../../../assets/bootstrap/js/bootstrap.min.js"></script>
+          <!-- <script src="../../../assets/js/jquery.backstretch.min.js"></script> -->
+          <!-- <script src="../../../assets/js/scripts.js"></script> -->
+
+          <!--[if lt IE 10]>
+              <script src="assets/js/placeholder.js"></script>
+          <![endif]-->
+
+        </body>
+
+      </html>
+
+
+
+      EOF
+    end
   end
+
 
 
 

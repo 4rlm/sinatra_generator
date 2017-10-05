@@ -42,9 +42,7 @@ class AppGenerator
     puts "\n3) Migration Files:\nEnter field name and type in following format:\nfirst_name, last_name, phone:integer, current:boolean, birthday:date\nDefault datatype will be string if not specified.\n\n"
     get_migration_data_fields
 
-    #############################
     generate_mvch
-    puts "Testing - Complete."
     puts "Successfully generated Models, Views & Controllers for: #{@mvc}"
 
   end
@@ -57,7 +55,6 @@ class AppGenerator
       @mvc_hashes << { table: table, fields: data_fields_array }
     end
   end
-
 
   def generate_app
     FileUtils.mkdir_p("../#{@app_name}/app/controllers")
@@ -93,12 +90,7 @@ class AppGenerator
     generate_config_ru
   end
 
-  # def create_file(path, content)
-  #   File.open("../#{@app_name}/app/#{path}", "w+") { |file| file.write(content) }
-  # end
-
   def unzip_files
-
     unzip_file_paths = %w(
       app/views/index.erb
       public/assets/bootstrap/css/bootstrap-theme.css
@@ -117,6 +109,7 @@ class AppGenerator
       public/assets/bootstrap/js/npm.js
       public/assets/css/form-elements.css
       public/assets/css/style.css
+      public/assets/css/normalize.css
       public/assets/font-awesome/css/font-awesome.css
       public/assets/font-awesome/css/font-awesome.min.css
       public/assets/font-awesome/fonts/fontawesome-webfont.eot
