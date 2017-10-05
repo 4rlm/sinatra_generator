@@ -10,6 +10,7 @@ class AppGenerator
 
   def initialize
     @app_name = nil
+    @app_name_string = nil
     @mvc = []
     @mvc_hashes = []
   end
@@ -27,13 +28,16 @@ class AppGenerator
 
     puts "App Name:"
     @app_name = gets.chomp
+    @app_name = @app_name.downcase.tr!(" ", "_") ## to snake_case
+    @app_name_string = @app_name.downcase.tr("_", " ") ## to string
+
     generate_app
     puts "\n> Successfully generated #{@app_name} directory"
 
     puts "\n2) MVC:"
     mvc_string = gets.chomp
-    @mvc = mvc_string.downcase.split(' ')
-
+    @mvc = mvc_string.downcase.split(',')
+    @mvc.map! { |string| string.strip }
 
     puts "\n3) Migration Files:\nEnter field name and type in following format:\nfirst_name, last_name, phone:integer, current:boolean, birthday:date\nDefault datatype will be string if not specified.\n\n"
     get_migration_data_fields

@@ -300,12 +300,6 @@ module FileWriter
   end
 
 
-
-
-
-
-
-
   def generate_application_layout_view
     # <li><a href="/accounts">Accounts</a></li>
     # <li><a href="/contacts">Contacts</a></li>
@@ -315,6 +309,8 @@ module FileWriter
       snake_plural = snake_case.pluralize
       li_links << "<li><a href='/#{snake_plural}'>#{snake_plural}</a></li>\n\t\t\t\t\t\t\t"
     end
+
+    app_name_string_capitalized = @app_name_string.split.map(&:capitalize).join(' ')
 
     li_link_strings = li_links.join("")
 
@@ -331,7 +327,7 @@ module FileWriter
             <meta charset="utf-8">
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>#{@app_name}</title>
+            <title>#{app_name_string_capitalized}</title>
 
             <!-- CSS -->
             <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
@@ -361,7 +357,7 @@ module FileWriter
                       <span class="icon-bar"></span>
                       <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> #{@app_name} </a>
+                    <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> #{app_name_string_capitalized} </a>
                   </div>
 
                   <!-- Collect the nav links, forms, and other content for toggling -->
