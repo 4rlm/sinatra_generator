@@ -62,33 +62,34 @@ module FileWriter
     end
   end
 
-  def generate_helper_file(snake_case, helper_name)
-    helper_path = "../#{@app_name}/app/helpers/#{snake_case}.rb"
+  def generate_helper_file(snake_case, camelize)
+    camel_plural = camelize.pluralize
+    helper_path = "../#{@app_name}/app/helpers/#{snake_case.pluralize}_helper.rb"
     puts "Creating #{helper_path}"
 
     File.open(helper_path, 'w+') do |f|
       f.write(<<-EOF.strip_heredoc)
-        module #{helper_name}Helper
+        module #{camel_plural}Helper
 
           def greeting
-            puts "In the #{helper_name}Helper module."
+            puts "In the #{camel_plural}Helper module."
           end
 
         end
-        helpers #{helper_name}Helper
+        helpers #{camel_plural}Helper
       EOF
     end
   end
 
-  def generate_controller_file(snake_case, controller_name)
+  def generate_controller_file(snake_case, camelize)
     snake_plural = snake_case.pluralize
 
-    controller_path = "../#{@app_name}/app/controllers/#{snake_case}.rb"
+    controller_path = "../#{@app_name}/app/controllers/#{snake_plural}_controller.rb"
     puts "Creating #{controller_path}"
 
     File.open(controller_path, 'w+') do |f|
       f.write(<<-EOF.strip_heredoc)
-        class #{controller_name}Controller < ApplicationController
+        class #{camelize.pluralize}Controller < ApplicationController
 
           # #{snake_plural} home / view all page.
           get '/#{snake_plural}' do
