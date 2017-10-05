@@ -1,30 +1,41 @@
 source 'https://rubygems.org'
-ruby '~> 2.2', '>= 2.2.2'
 
 # PostgreSQL driver
-gem 'pg', '~> 0.18'
+gem 'pg'
 
 # Sinatra driver
-gem 'sinatra', '~> 1.4.8'
+gem 'sinatra', '~>1.4'
 gem 'sinatra-contrib'
 
-# Use Thin for our web server
-gem 'thin'
+# gem "rails"
+# gem 'activesupport', '~>4.2.0'
+# gem 'activerecord', '~>4.2.0'
+gem 'activerecord', :require => 'active_record'
+gem 'sinatra-activerecord', :require => 'sinatra/activerecord'
+gem 'require_all' #=> Helps to load dependencies
 
-gem 'activerecord', '~> 5.0'
-gem 'activesupport', '~> 5.0'
-
-gem 'rake', '~> 12.0.0'
-gem 'shotgun'
-
-# Adam's Gems
-gem "irbtools"
-gem 'will_paginate', '~> 3.1.0'
-gem 'will_paginate-bootstrap'
+gem 'rake'
 gem 'pry'
-
+gem 'rack', '1.5.2'
+gem 'shotgun'
+gem 'faker'
+gem 'bcrypt'
+gem 'irbtools'
 
 group :test do
-  gem 'faker', '~> 1.7.3'
-  gem 'rspec', '~> 3.5'
+  gem 'shoulda-matchers'
+  gem 'rack-test'
+  gem 'rspec', '~>3.0'
+  gem 'capybara'
+  gem 'database_cleaner'
+  gem 'factory_girl'
 end
+
+# Adam's Gems
+gem 'will_paginate', '~> 3.1.0'
+# gem 'thin'
+# gem "tux"
+# gem 'rack-flash3'
+# gem 'sinatra-flash'
+
+gem 'rubyzip'

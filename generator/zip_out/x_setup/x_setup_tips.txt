@@ -1,0 +1,459 @@
+## Sample: WorkFlow ##
+
+gem install bundler
+bundle install
+rake db:create
+rake generate:model NAME=Color
+rake generate:model NAME=Fruit
+rake generate:migration NAME=create_colors
+rake generate:migration NAME=create_fruits
+rake db:migrate
+
+gem install faker
+rake db:seed
+rake console
+
+bundle exec rake spec
+
+################################
+# Polymorphic DB Queries / Query via IRB Console
+
+#1) Entry.select("entries.id, entries.author, entries.title, entries.body, tags.name").joins("JOIN tags ON tags.taggable_id = entries.id")
+
+#2) Entry.find(1).tags  #=> 1 is id number.
+
+#3) Entry.find(Tag.find(7).taggable_id)
+
+################################
+The table of one model needs a foreign key that points the the primary key on the table of the other model.
+#### belongs_to Tips ####
+* a dog belongs to an owner/person
+* a rating belongs to the judge/person who did the rating
+* a rating belongs to the dog that was rated
+#### has_many Tips ####
+* an owner/person has many dogs
+* a judge/person has many ratings
+* a dog has many ratings
+
+
+class Dog < ApplicationRecord
+  belongs_to :owner, { class_name: "Person" }
+  has_many :ratings, { :class_name => "Rating", :foreign_key => :dog_id }
+end
+
+
+################################
+#### Sample Migration File ####
+
+class CreateFruits < ActiveRecord::Migration[5.0]
+  def change
+    create_table :fruits do |t|
+      t.string :fruit_name, {null: false, limit: 50}
+      t.string :fruit_shape, {null: false, limit: 50}
+      t.timestamps
+    end
+  end
+end
+
+class CreateColors < ActiveRecord::Migration[5.0]
+  def change
+    create_table :colors do |t|
+      t.string :color_name, {null: false, limit: 50}
+      t.string :color_brightness, {null: false, limit: 50}
+      t.integer :fruit_id
+      t.timestamps
+    end
+  end
+end
+
+
+################################
+#### Sample Class Model ####
+
+class Color < ApplicationRecord
+  belongs_to :fruit
+  validates :chamber_name, :title, { :presence => true }
+end
+
+class Fruit < ApplicationRecord
+  has_many :colors, through :join_table
+  or
+  has_many :colors, {foreign_key: :fruit_id}
+  validates :chamber_name, :title, { :presence => true }
+end
+
+
+################################
+#### Sample Testing and Adding Data ####
+
+rake console
+Fruit.create(fruit_name: 'apple')
+Color.create(color_name: "yellow")
+###################
+
+
+
+
+Horse.create(name: 'Lucky Break', breed: 'Black')
+Horse.create(name: 'Finish Line', breed: 'Tan')
+Horse.create(name: 'Discovery', breed: 'White')
+
+Jockey.create(name: "Newt Gingrich")
+Jockey.create(name: "Bill Clinton")
+Jockey.create(name: "George Bush")
+
+Race.create(name: 'Midwest Finals', location: 'Arlington Heights', date: '2014-02-14')
+Race.where(id: 2).update(name: 'Mile of Roses', location: 'Austin', date: '2017-08-15')
+
+
+Entry.all.first
+entry = _
+entry
+entry.horse
+
+
+
+
+####################
+Fruit.all
+Color.all
+
+#ratings.<<#
+#rating_ids
+#rating_ids=
+#ratings.build
+#ratings.create
+#ratings.create
+
+tenley = Dog.find_by(name: "Tenley")
+tenley.ratings
+tenley.ratings.count
+new_rating = Rating.new(coolness: 8, cuteness: 10, judge_id: 4)
+tenley.ratings << new_rating
+new_rating
+tenley.ratings.include? new_rating
+
+Fruit.reflect_on_association(:entries)
+Color.reflect_on_all_associations
+Color.pluralize
+
+################################
+#### Sample Seeding ####
+
+title_obj = Title.find_or_create_by(chamber: row[:chamber], name: row[:title])
+
+person = Person.new(first_name: row[:first_name], middle_name: row[:middle_name], state_id: state_id: state_obj.id, party_id: party_obj.id, title_id: title_obj.id)
+
+person.title = title_obj
+person_items << person
+#######################
+
+########################################################
+
+
+
+
+########################################################
+
+#### Active Record CheatSheet ####
+Naming Convention:
+Class names singular, capitalized, CamelCase
+Table names plural, lower_case, snake_case
+
+User / Users
+LineItem / line_items
+Deer / deer
+Person / people
+
+Foreign key names singular, snake_case
+User / user_id
+LineItem / line_item_id
+Deer / deer_id
+Person / person_id
+
+################################
+
+ActiveRecord:
+* Creates Tables
+* Maps ruby classes to db tables
+* Associations between classes
+* Validations
+
+################################
+
+Write classes that inherit from AR module, ex:
+
+module ActiveRecord
+  class Migration
+    #
+  end
+
+  class Base
+    #
+  end
+
+  #...
+
+end
+
+################################
+Build database schema by writing migrations:
+
+class CreateOrange < ActiveRecord::Migration
+  def change
+    # what we want to do with the db...
+  end
+end
+
+################################
+Mapping Classes to Tables: Modeling State
+
+Ruby / DB
+Classes / Tables
+Instances of Classes / Rows
+Instance Variables / Fields
+
+* Class methods to retrieve records from table.
+* Instance methods to read and write values.
+
+
+################################
+Associations between Classes:
+
+orange_trees / oranges
+id / orange_tree_id
+
+* Orange belongs to Orange Tree
+* Orange gets the foreign_key (orange_tree_id)
+
+#### Define Associations between Classes (in Model):
+
+class OrangeTree < ActiveRecord::Base
+  has_many :oranges
+  has_many :seeds, through: :oranges
+end
+
+class Orange < ActiveRecord::Base
+  belongs_to :orange_tree
+  has_many :seeds
+end
+
+class Seed < ActiveRecord::Base
+  belongs_to :orange
+end
+
+table oranges has orange_tree_id (foreign_key)
+table seeds has orange_id (foreign_key)
+
+################################
+Breaking Convention:
+
+######## Wrong ID ########
+class OrangeTree < ActiveRecord::Base
+  has_many :oranges, { foreign_key :tree_id }
+end
+
+class Orange < ActiveRecord::Base
+  belongs_to :orange_tree, { foreign_key :tree_id }
+end
+
+######## Wrong Class Name ########
+class OrangeTree < ActiveRecord::Base
+  has_many :fruits, { class_name: "Orange" }
+end
+
+class Orange < ActiveRecord::Base
+  belongs_to :tree, { class_name: "OrangeTree" }
+end
+
+
+###########
+class User < ApplicationRecord
+  has_many :views
+  has_many :purchases
+  has_many :reviews
+
+  has_many :viewed_items, { through: :views }
+  has_many :purchased_items, { through: :purchases }
+  has_many :reviewed_items, { through: :reviews }
+end
+##########
+
+
+##########
+class Race < ApplicationRecord
+  has_many :entries
+  has_many :jockeys, through: :entries, source: :jockey
+  has_many :horses, through: :entries, source: :horse
+end
+##########
+
+
+
+#### Instance Methods to retrieve, update, delete, create, etc. associated objects.
+
+################################
+Validations:  Built-in and Custom
+
+class Orange < ActiveRecord::Base
+  validate :legit_diameter
+
+  def legit_diameter
+    # Add errors here ...
+  end
+
+end
+
+
+#################################
+#### Ordering Below ####
+
+1) Generate Model & Table
+2) Virtual Attributes (inside Model Class)
+3) remove_column
+4) add_column
+5) rename_column
+6) Query
+7) Inserting & Updating
+8) Validations
+
+#################################
+1) Generate Model & Table
+bundle exec rake generate:model NAME=Person
+bundle exec rake generate:migration NAME=create_people
+class CreatePeople < ActiveRecord::Migration[5.0]
+  def change
+    create_table :people do |t|
+      t.string  :first_name, {nul: false, limit: 50}
+      t.string  :last_name, {nul: false, limit: 50}
+
+      t.timestamps
+    end
+  end
+end
+
+2) Virtual Attributes (inside Model Class)
+    # Getter
+    def full_name
+      [first_name, last_name].join(' ')
+    end
+
+    # Setter
+    def full_name=(name)
+      split = name.split(' ', 2)
+      self.first_name = split.first
+      self.last_name = split.last
+    end
+
+3) remove_column
+bundle exec rake generate:migration NAME=remove_weight_from_dogs
+class RemoveWeightFromDogs < ActiveRecord::Migration[5.0]
+  def change
+    remove_column :dogs, :weight
+  end
+end
+
+4) add_column
+bundle exec rake generate:migration NAME=add_breed_to_dogs
+class AddBreedToDogs < ActiveRecord::Migration[5.0]
+  def change
+    add_column :dogs, :breed, :string
+  end
+end
+
+5) rename_column
+bundle exec rake generate:migration NAME=rename_rater_id_to_judge_id_on_ratings
+class RenameRaterIdToJudgeIdOnRatings < ActiveRecord::Migration[5.0]
+  def change
+    rename_column :ratings, :rater_id, :judge_id
+  end
+end
+
+6) Query
+Dog.where(age: 1)
+Dog.where("age = ? and name like ?", 1, '%Te%')
+Dog.order(age: :desc)
+Dog.limit(2)
+Dog.count
+Dog.pluck(:name, :age)
+Dog.first
+Dog.find_by(name: "Jayda")
+Dog.order(name: :asc).where(age: 1).limit(1)
+
+7) Inserting & Updating
+new_dog = Dog.new(name: "Bear") #=> memory only
+Dog.new(color: "brown")
+Dog.count
+new_dog.persisted?
+new_dog.save
+#######################
+Student.create(first_name: "bill", last_name: "smith", phone: "512-555-1212")
+Student.create(first_name: "melissa", last_name: "fadim", phone: "312-555-1212")
+
+b = Student.find_by(first_name: "bill")
+b.birthday = "1980-03-01"
+b.save
+
+m = Student.find_by(first_name: "melissa")
+m.birthday = "1949-03-14"
+m.save
+
+t.string :first_name
+t.string :last_name
+t.string :phone
+t.date :birthday
+
+#######################
+Dog.create(name: "Max") #=> create and save one
+Dog.create [{name: "Toot"}, {name: "Cosmo"}] #=> create and save multiple
+Dog.find_or_create_by(name: "Taj", license: "OH-9084736")
+#######################
+tenley = Dog.find_by(name: "Tenley")
+tenley.assign_attributes(age: 3, license: "OH-1234567")
+rabid_dog = Dog.create(name: "Old Yeller", age: 5, breed: "Black Mouth Cur")
+rabid_dog.destroy
+Rating.where("judge_id = 1 AND dog_id = 2").update_all(cuteness: 7)
+Rating.where(judge_id: 5).destroy_all
+Rating.where("dog_id = 1 AND cuteness < 10").update_all(cuteness: 10)
+Rating.where("dog_id = 3 AND coolness = 7 AND cuteness = 4 AND judge_id = 4").update_all(judge_id: 6)
+Rating.where("dog_id = 2 AND judge_id = 2 AND coolness = 10 AND cuteness = 8").update_all("coolness = 8 AND cuteness = 10")
+
+8) Validations
+belongs_to :owner, { class_name: "Person" }
+validates :owner, { :presence => true }
+validates :name, :license, { :presence => true }
+validates :license, { :uniqueness => true }
+
+validates :first_name, :last_name, :phone, :birthday { :presence => true }
+t.string :color_brightness, {nul: false, limit: 50}
+
+validates :license, format: { with: /\A[A-Z]{2}\-/ }
+validates :age, { :numericality => { greater_than_or_equal_to: 0 },
+                  :allow_blank  => true }
+
+validate :license_from_valid_state
+def license_from_valid_state
+  unless self.license.instance_of? String
+    errors.add :license, "must be a string"
+    return
+  end
+
+  abbreviation = self.license[0..1]
+  unless valid_state_abbreviation? abbreviation
+    errors.add :license, "must be from a valid US state"
+  end
+end
+
+#####################
+
+has_and_belongs_to_many
+has_and_belongs_to_many(name, scope = nil, options = {}, &extension) public
+
+class CreateDevelopersProjectsJoinTable < ActiveRecord::Migration
+  def change
+    create_table :developers_projects, id: false do |t|
+      t.integer :developer_id
+      t.integer :project_id
+    end
+  end
+end
