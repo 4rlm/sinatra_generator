@@ -408,7 +408,7 @@ module FileWriter
           <tr>
             <td><%= @#{snake_case}.id %></td>
       #{td_block_strings}
-            <td><%= @#{snake_case}.updated_at %></td>
+            <td><%= @#{snake_case}.updated_at.strftime('%x')%></td>
           </tr>
 
         </table>
@@ -633,6 +633,54 @@ module FileWriter
 
       EOF
     end
+  end
+
+  def generate_seed
+    seed_path = "../#{@app_name}/db/seeds.rb"
+    puts "Creating #{seed_path}"
+    # tables = @mvc_hashes.map { |hash| hash[:table] }
+
+    seed_model_blocks = []
+    @mvc_hashes.each do |table_hash|
+      model_name = table_hash[:table]
+      fields = table_hash[:fields]
+      # binding.pry
+      seed_model_blocks << (<<-EOF.gsub(/^ {6}/, ''))
+
+      def seed_#{model_name}_table
+        puts "Seeding the #{model_name} table..."
+        total_seeds_required = 50
+        current_seeds_in_db = #{model_name.camelize}.count
+        seeds_to_create = total_seeds_required - current_seeds_in_db
+
+        # #{fields}
+        seeds_to_create.times do
+          # #{model_name}_hash = {
+          #   name: Faker::Lorem.word,
+          #   description: Faker::Lorem.sentence,
+          #   status: Faker::Lorem.word,
+          #   rating: 5
+          # }
+          new_#{model_name}_record = #{model_name.camelize}.new(#{model_name}_hash)
+          new_#{model_name}_record.save!
+        end
+
+      end
+      seed_#{model_name}_table
+
+      EOF
+    end
+
+    seed_model_block_strings = seed_model_blocks.join('')
+    File.open(seed_path, 'w+') do |f|
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
+      puts "Seeding the database ..."
+
+      #{seed_model_block_strings}
+      EOF
+    end
+
+
   end
 
 

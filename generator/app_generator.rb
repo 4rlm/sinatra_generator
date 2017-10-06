@@ -63,7 +63,6 @@ class AppGenerator
     FileUtils.mkdir_p("../#{@app_name}/app/views")
     FileUtils.mkdir_p("../#{@app_name}/config")
     FileUtils.mkdir_p("../#{@app_name}/db/migrate")
-    FileUtils.mkdir_p("../#{@app_name}/db/seeds")
     FileUtils.mkdir_p("../#{@app_name}/lib")
     FileUtils.mkdir_p("../#{@app_name}/public/assets/css")
     FileUtils.mkdir_p("../#{@app_name}/public/assets/fonts")
@@ -88,6 +87,7 @@ class AppGenerator
     generate_application_controller
     generate_application_layout_view
     generate_config_ru
+    generate_seed
   end
 
   def unzip_files
