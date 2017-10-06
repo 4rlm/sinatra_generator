@@ -316,7 +316,7 @@ module FileWriter
     puts "Creating #{view_path}"
 
     File.open(view_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
       <div class="">
 
         <div class="erb_header">
@@ -343,7 +343,7 @@ module FileWriter
     puts "Creating #{view_path}"
 
     File.open(view_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
       <div class="">
 
         <div class="erb_header">
@@ -376,7 +376,6 @@ module FileWriter
     fields.each do |field|
       th_blocks << (<<-EOF.gsub(/^ {6}/, ''))
       <th class="w-small">#{field}</th>
-
       EOF
     end
 
@@ -385,7 +384,6 @@ module FileWriter
     fields.each do |field|
       td_blocks << (<<-EOF.gsub(/^ {6}/, ''))
       <td><%= @#{snake_case}.#{field} %></td>
-
       EOF
     end
 
@@ -393,7 +391,7 @@ module FileWriter
     td_block_strings = td_blocks.join('')
 
     File.open(view_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
       <div class="">
 
         <div class="erb_header">
@@ -414,9 +412,7 @@ module FileWriter
           </tr>
 
         </table>
-
       </div>
-
       EOF
     end
 
@@ -431,15 +427,13 @@ module FileWriter
     fields.each do |field|
       th_blocks << (<<-EOF.gsub(/^ {6}/, ''))
       <th>#{field}</th>
-
       EOF
     end
 
     td_blocks = []
     fields.each do |field|
       td_blocks << (<<-EOF.gsub(/^ {6}/, ''))
-      <td><%= @#{snake_case}.#{field} %></td>
-
+      <td><%= #{snake_case}.#{field} %></td>
       EOF
     end
 
@@ -447,7 +441,7 @@ module FileWriter
     td_block_strings = td_blocks.join('')
 
     File.open(view_path, 'w+') do |f|
-      f.write(<<-EOF.strip_heredoc)
+      f.write(<<-EOF.gsub(/^ {6}/, ''))
       <h1>On INDEX - #{snake_plural} ERB</h1>
 
       <table class="table table-bordered table-striped table-hover">
@@ -455,7 +449,6 @@ module FileWriter
           <th>ID</th>
       #{th_block_strings}
           <th>Updated</th>
-
           <th colspan="3">Manage</th>
         </tr>
         <% @#{snake_plural}.each do |#{snake_case}|%>
