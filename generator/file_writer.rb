@@ -4,6 +4,11 @@ require 'pry'
 module FileWriter
   extend ActiveSupport::Concern
 
+  def snake_to_cap_string(snake_case)
+    snake_case = snake_case.downcase.tr("_", " ") if snake_case.include?('_')
+    capitalized_strings = snake_case.split.map(&:capitalize).join(' ')
+  end
+
   def generate_model_file(snake_case, model_name)
     model_path = "../#{@app_name}/app/models/#{snake_case}.rb"
     puts "Creating #{model_path}"
@@ -268,8 +273,8 @@ module FileWriter
 
 
   def generate_view_files(snake_case, camelized)
-    fields = @mvc_hashes.find(table: snake_case).first[:fields]
     snake_plural = snake_case.pluralize
+    fields = @mvc_hashes.find { |hash| hash[:table] == snake_case }[:fields]
 
     FileUtils.mkdir_p("../#{@app_name}/app/views/#{snake_plural}")
     generate_index_view(snake_case, camelized, snake_plural, fields)
@@ -288,9 +293,9 @@ module FileWriter
     fields.each do |field|
       html_block << (<<-EOF.gsub(/^ {6}/, ''))
       <div class="form-group">
-        <label for="#{field}" class="col-sm-2 control-label">#{field}</label>
+        <label for="#{field}" class="col-sm-2 control-label">#{snake_to_cap_string(field)}</label>
         <div class="col-sm-10">
-          <input class="form-control" id="#{field}" name="#{snake_case}[#{field}]" type="text" value="<%= @#{snake_case}.#{field} %>" placeholder="#{field}" />
+          <input class="form-control" id="#{field}" name="#{snake_case}[#{field}]" type="text" value="<%= @#{snake_case}.#{field} %>" placeholder="#{snake_to_cap_string(field)}" />
         </div>
       </div>
 
@@ -320,7 +325,7 @@ module FileWriter
       <div class="">
 
         <div class="erb_header">
-          <h2>Create New #{camelized}</h2>
+          <h2>Create New #{snake_to_cap_string(snake_case)}</h2>
         </div>
 
         <form class="form-horizontal" action="/#{snake_plural}" method="post">
@@ -347,7 +352,7 @@ module FileWriter
       <div class="">
 
         <div class="erb_header">
-          <h2>Edit #{camelized}</h2>
+          <h2>Edit #{snake_to_cap_string(snake_case)}</h2>
         </div>
 
         <form class="form-horizontal" action="/#{snake_plural}/<%= @#{snake_case}.id %>" method="post">
@@ -375,7 +380,7 @@ module FileWriter
     th_blocks = []
     fields.each do |field|
       th_blocks << (<<-EOF.gsub(/^ {6}/, ''))
-      <th class="w-small">#{field}</th>
+      <th class="w-small">#{snake_to_cap_string(field)}</th>
       EOF
     end
 
@@ -395,7 +400,7 @@ module FileWriter
       <div class="">
 
         <div class="erb_header">
-          <h2>Show #{camelized}</h2>
+          <h3>#{snake_to_cap_string(snake_case)} Detail View</h3>
         </div>
 
         <table class="table table-bordered table-hover table-striped">
@@ -426,7 +431,7 @@ module FileWriter
     th_blocks = []
     fields.each do |field|
       th_blocks << (<<-EOF.gsub(/^ {6}/, ''))
-      <th>#{field}</th>
+      <th>#{snake_to_cap_string(field)}</th>
       EOF
     end
 
@@ -442,7 +447,7 @@ module FileWriter
 
     File.open(view_path, 'w+') do |f|
       f.write(<<-EOF.gsub(/^ {6}/, ''))
-      <h1>On INDEX - #{snake_plural} ERB</h1>
+      <h3>View All #{snake_to_cap_string(snake_case)}</h3>
 
       <table class="table table-bordered table-striped table-hover">
         <tr>
@@ -457,17 +462,8 @@ module FileWriter
       #{td_block_strings}
           <td><%= #{snake_case}.updated_at.strftime('%x')%></td>
 
-          <td>
-            <button class="btn btn-default" name="commit" type="submit"><a href="/#{snake_plural}/<%= #{snake_case}.id %>">
-              <span class="glyphicon glyphicon-folder-open"></span>
-            </a></button>
-          </td>
-
-          <td>
-            <button class="btn btn-default" name="commit" type="submit"><a href="/#{snake_plural}/<%= #{snake_case}.id %>/edit">
-              <span class="glyphicon glyphicon-edit"></span>
-            </a></button>
-          </td>
+          <td><a href="/#{snake_plural}/<%= #{snake_case}.id %>"><span class="glyphicon glyphicon-folder-open"></span></a></td>
+          <td><a href="/#{snake_plural}/<%= #{snake_case}.id %>/edit"><span class="glyphicon glyphicon-edit"></span></a></td>
 
           <td><%= erb :'#{snake_plural}/_delete', layout: true, locals: { #{snake_case}: #{snake_case} }%></td>
 
@@ -494,7 +490,7 @@ module FileWriter
       f.write(<<-EOF.strip_heredoc)
       <form action="/#{snake_plural}/<%= #{snake_case}.id %>" method="post">
         <input name="_method" type="hidden" value="delete" />
-        <button class="btn btn-danger" name="commit" type="submit"><span class="glyphicon glyphicon-trash"></span></button>
+        <button name="commit" type="submit"><span class="glyphicon glyphicon-trash"></span></button>
       </form>
       EOF
     end
@@ -527,8 +523,7 @@ module FileWriter
       EOF
     end
 
-    app_name_string_capitalized = @app_name_string.split.map(&:capitalize).join(' ')
-    # li_link_strings = li_links.map {|string| "#{string}\n"}
+    app_name_string_capitalized = snake_to_cap_string(@app_name)
     li_link_strings = li_links.join("")
     layout_path = "../#{@app_name}/app/views/layout.erb"
     puts "Creating #{layout_path}"
@@ -543,7 +538,7 @@ module FileWriter
           <meta charset="utf-8">
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Austin City Guide</title>
+          <title>#{snake_to_cap_string(@app_name)}</title>
 
           <!-- CSS -->
           <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
@@ -563,7 +558,7 @@ module FileWriter
 
         <body>
           <div>
-            <nav class="navbar navbar-default navbar-fixed-top">
+          <nav class="navbar navbar-fixed-top">
               <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
@@ -573,7 +568,7 @@ module FileWriter
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </button>
-                  <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> Austin City Guide </a>
+                  <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-list-alt"></span> #{snake_to_cap_string(@app_name)}</a>
                 </div>
 
                 <!-- Collect the nav links, forms, and other content for toggling -->

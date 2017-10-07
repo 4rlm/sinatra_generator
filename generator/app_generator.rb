@@ -28,8 +28,8 @@ class AppGenerator
 
     puts "App Name:"
     @app_name = gets.chomp
-    @app_name = @app_name.downcase.tr!(" ", "_") ## to snake_case
-    @app_name_string = @app_name.downcase.tr("_", " ") ## to string
+    @app_name = @app_name.downcase.tr!(" ", "_") if @app_name.include?(' ')
+    @app_name.include?('_') ? @app_name_string = @app_name.downcase.tr("_", " ") : @app_name_string = @app_name
 
     generate_app
     puts "\n> Successfully generated #{@app_name} directory"
