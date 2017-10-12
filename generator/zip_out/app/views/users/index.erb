@@ -1,0 +1,33 @@
+<h3>View All User</h3>
+
+<table class="table table-bordered table-hover table-striped">
+  <tr>
+    <th class="w-small">ID</th>
+    <th>Name</th>
+    <th>Email</th>
+    <th>Pw Hash</th>
+    <th class="w-med">Updated</th>
+    <th colspan="3" class="w-med">Manage</th>
+  </tr>
+    <% @users.each do |user|%>
+  <tr>
+    <td class="w-small"><%= user.id%></td>
+    <td><%= user.name %></td>
+    <td><%= user.email %></td>
+    <td><%= user.pw_hash %></td>
+    <td><%= user.updated_at.strftime('%x')%></td>
+
+    <td><a href="/users/<%= user.id %>"><span class="glyphicon glyphicon-folder-open"></span></a></td>
+    <td><a href="/users/<%= user.id %>/edit"><span class="glyphicon glyphicon-edit"></span></a></td>
+
+    <td><%= erb :'users/_delete', layout: true, locals: { user: user }%></td>
+
+  </tr>
+  <% end %>
+</table>
+
+
+<div class="digg_pagination">
+  <%#= will_paginate @users, renderer: BootstrapPagination::Sinatra %>
+  <%#= will_paginate @users %>
+</div>

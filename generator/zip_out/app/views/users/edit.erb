@@ -1,0 +1,19 @@
+<div class="">
+
+  <div class="erb_header">
+    <h3>Edit User</h3>
+  </div>
+
+  <form class="form-horizontal" action="/users/<%= @user.id %>" method="post">
+
+    <div class="form-group">
+      <input class="form-control" name="_method" type="hidden" value="patch" />
+    </div>
+
+    <!-- ## Form content moved to partial (_form_fields.erb) -->
+    <%= erb :'users/_form_fields', layout: false, locals: { user: @user } %>
+
+    <button class="btn btn-success" name="commit" type="submit">Update User</button>
+  </form>
+
+</div>

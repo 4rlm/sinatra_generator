@@ -61,6 +61,7 @@ class AppGenerator
     FileUtils.mkdir_p("../#{@app_name}/app/helpers")
     FileUtils.mkdir_p("../#{@app_name}/app/models")
     FileUtils.mkdir_p("../#{@app_name}/app/views")
+    FileUtils.mkdir_p("../#{@app_name}/app/views/users")
     FileUtils.mkdir_p("../#{@app_name}/config")
     FileUtils.mkdir_p("../#{@app_name}/db/migrate")
     FileUtils.mkdir_p("../#{@app_name}/lib")
@@ -92,7 +93,22 @@ class AppGenerator
 
   def unzip_files
     unzip_file_paths = %w(
+      app/controllers/users_controller.rb
+      app/helpers/application_helper.rb
+      app/helpers/users_helper.rb
+      app/models/user.rb
       app/views/index.erb
+
+      app/views/users/_delete.erb
+      app/views/users/_form_fields.erb
+      app/views/users/edit.erb
+      app/views/users/index.erb
+      app/views/users/login.erb
+      app/views/users/register.erb
+      app/views/users/show.erb
+
+      db/migrate/20171010611_create_users.rb
+      db/seeds_example.rb
       public/assets/bootstrap/css/bootstrap-theme.css
       public/assets/bootstrap/css/bootstrap-theme.css.map
       public/assets/bootstrap/css/bootstrap-theme.min.css

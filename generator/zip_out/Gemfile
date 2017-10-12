@@ -13,8 +13,8 @@ gem 'pry'
 gem 'bcrypt'
 gem "tux"
 gem 'rack', '2.0.3'
-# gem 'rack-flash3'
-# gem 'sinatra-flash'
+gem 'rack-flash3'
+gem 'sinatra-flash'
 
 # PostgreSQL driver
 gem 'pg'

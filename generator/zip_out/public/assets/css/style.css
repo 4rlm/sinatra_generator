@@ -24,7 +24,7 @@ button.btn:hover {
 
 .glyphicon {
   color: #666666;
-/*font-size: 20px;*/
+  /*font-size: 20px;*/
 }
 
 .glyphicon:hover {
@@ -58,12 +58,10 @@ th {
   box-shadow: 10px 10px 5px #888888;
 }
 
-
 th {
   text-align: center;
   padding: 0;
 }
-
 
 .table {
   table-layout:fixed;
@@ -109,14 +107,28 @@ th {
   box-sizing: border-box;
 }
 
-.error-message {
+/*.error-message {
+background: red;
+color: white;
+font-size: 20px;
+border-radius: 5px;
+}
+
+.success-message {
+background: green;
+color: white;
+font-size: 20px;
+border-radius: 5px;
+}*/
+
+.error_alert {
   background: red;
   color: white;
   font-size: 20px;
   border-radius: 5px;
 }
 
-.success-message {
+.success_alert {
   background: green;
   color: white;
   font-size: 20px;
@@ -127,46 +139,67 @@ th {
 .digg_pagination {
   background: white;
   cursor: default;
-/* self-clearing method: */ }
+/* self-clearing method: */
+}
+
 .digg_pagination a, .digg_pagination span, .digg_pagination em {
   padding: 0.2em 0.5em;
   display: block;
   float: left;
-  margin-right: 1px; }
-  .digg_pagination .disabled {
-    color: #999999;
-    border: 1px solid #dddddd; }
-    .digg_pagination .current {
-      font-style: normal;
-      font-weight: bold;
-      background: #2e6ab1;
-      color: white;
-      border: 1px solid #2e6ab1; }
-      .digg_pagination a {
-        text-decoration: none;
-        color: #105cb6;
-        border: 1px solid #9aafe5; }
-        .digg_pagination a:hover, .digg_pagination a:focus {
-          color: #000033;
-          border-color: #000033; }
-          .digg_pagination .page_info {
-            background: #2e6ab1;
-            color: white;
-            padding: 0.4em 0.6em;
-            width: 22em;
-            margin-bottom: 0.3em;
-            text-align: center; }
-            .digg_pagination .page_info b {
-              color: #000033;
-              background: #6aa6ed;
-              padding: 0.1em 0.25em; }
-              .digg_pagination:after {
-                content: ".";
-                display: block;
-                height: 0;
-                clear: both;
-                visibility: hidden; }
-                * html .digg_pagination {
-                  height: 1%; }
-                  *:first-child + html .digg_pagination {
-                    overflow: hidden; }
+  margin-right: 1px;
+}
+
+.digg_pagination .disabled {
+  color: #999999;
+  border: 1px solid #dddddd;
+}
+
+.digg_pagination .current {
+  font-style: normal;
+  font-weight: bold;
+  background: #2e6ab1;
+  color: white;
+  border: 1px solid #2e6ab1;
+}
+
+.digg_pagination a {
+  text-decoration: none;
+  color: #105cb6;
+  border: 1px solid #9aafe5;
+}
+
+.digg_pagination a:hover, .digg_pagination a:focus {
+  color: #000033;
+  border-color: #000033;
+}
+
+.digg_pagination .page_info {
+  background: #2e6ab1;
+  color: white;
+  padding: 0.4em 0.6em;
+  width: 22em;
+  margin-bottom: 0.3em;
+  text-align: center;
+}
+
+.digg_pagination .page_info b {
+  color: #000033;
+  background: #6aa6ed;
+  padding: 0.1em 0.25em;
+}
+
+.digg_pagination:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+* html .digg_pagination {
+  height: 1%;
+}
+
+*:first-child + html .digg_pagination {
+  overflow: hidden;
+}

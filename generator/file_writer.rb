@@ -139,28 +139,24 @@ module FileWriter
     route_strings = routes.join("")
     File.open(application_controller_path, 'w+') do |f|
       f.write(<<-EOF.gsub(/^ {6}/, ''))
+      require 'rack-flash'
+
       class ApplicationController < Sinatra::Base
+        include ApplicationHelper
+        use Rack::Flash
 
         configure do
           set :public_folder, 'public'
           set :views, 'app/views'
-          # enable :sessions
-          # set :session_secret, "password_security"
+          enable :sessions
+          set :session_secret, "password_security"
         end
 
         get '/' do
-          # 'home page'
-          erb :'index'
+          !logged_in ? (redirect 'users/login') : redirect_to_home_page
         end
-
-        helpers do
-          def redirect_to_home_page
-            redirect to "/"
-          end
 
       #{route_strings}
-
-        end
 
       end
 
@@ -259,6 +255,7 @@ module FileWriter
 
       use Rack::MethodOverride
       #{controllers_list}
+      use UsersController
       run ApplicationController
 
       EOF
@@ -557,16 +554,18 @@ module FileWriter
                 <div id="navbar" class="collapse navbar-collapse">
 
                   <ul class="nav navbar-nav">
-                    <!-- <li class="active"><a href="/">Home</a></li>
-                    <li class="active"><a href="/file_magic">Helper</a></li> -->
+                  #{li_link_strings}
+                  <li><a href='/users/index'>View Members</a></li>
                   </ul>
 
                   <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/#">Login</a></li>
-                    <li><a href="/#">Sign-Up</a></li>
-
-      #{li_link_strings}
-
+                    <% if @user %>
+                      <li><a href='/users/logout'>Log Out</a></li>
+                      <li><a href="/users/<%= @user.id %>"><%= @user.name.capitalize %></a></li>
+                    <% else %>
+                      <li><a href='/users/register'>Register</a></li>
+                      <li><a href='/users/login'>Login</a></li>
+                    <% end %>
                   </ul>
 
                 </div><!-- /.navbar-collapse -->
@@ -575,17 +574,14 @@ module FileWriter
           </div>
 
           <div class='container erb-wrapper text-center' id='main'>
-            <% if @errors %>
-              <ul>
-                <% @errors.each do |error| %>
-                  <li class="error-message"><%= error %></li>
-                <% end %>
-              </ul>
-              <%# else %>
-              <!-- <ul>
-                <li class="success-message">Success!</li>
-              </ul> -->
+
+            <% flash.keys.each do |type| %>
+              <div data-alert class="flash <%= type %> alert-box radius">
+                <%= flash[type] %>
+                <a href="#" class="close">&times;</a>
+              </div>
             <% end %>
+
             <%= yield %>
           </div>
 
