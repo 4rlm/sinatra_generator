@@ -22,6 +22,6 @@ gem 'pg'
 
 ## Adam's Gems ##
 gem 'faker'
-gem 'irbtools'
+gem 'irbtools', require: 'irbtools/binding'
 gem 'rspec', '~>3.0'
 gem 'will_paginate', '~> 3.1.0'

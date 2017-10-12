@@ -1,31 +1,71 @@
+###### ACTIVE RECORD ######
 $ bundle
 $ be rake -T
 $ be rake db:create
 
-$ be rake generate:migration NAME=create_contacts
-$ be rake generate:model NAME=Contact
+$ be rake generate:migration NAME=create_dogs
+$ be rake generate:migration NAME=create_owners
+$ be rake generate:migration NAME=create_ratings
+
+$ be rake generate:model NAME=Dog
+$ be rake generate:model NAME=Owner
+$ be rake generate:model NAME=Rating
 
 $ be rake db:migrate
+
 $ be rake console
+  ApplicationRecord.connection.tables
+  ApplicationRecord.connection.columns(:dogs)
+  Dog
+  Dog.all
+  exit
 
-###################
+$ be rake db:rollback
+$ be rake db:drop
 
-##### CREATE RAKE FILE - GET SCHEMA.RB #####
-http://jasonseifer.com/2010/04/06/rake-tutorial
-https://github.com/janko-m/sinatra-activerecord
-http://backend.turing.io/module2/lessons/intro_to_active_record_in_sinatra
-https://github.com/ruby/rake
-https://stackoverflow.com/questions/42847336/how-do-i-configure-sinatra-to-use-structure-sql-instead-of-schema-rb
-
-
-ActiveRecord::Base.connection.tables
-
-ActiveRecord::Base.connection.tables.each do |table|
-  next if table.match(/\Aschema_migrations\Z/)
-  klass = table.singularize.camelize.constantize
-  puts "#{klass.name} has #{klass.count} records"
+####### MIGRATIONS #######
+create_table :dogs do |t|
+  t.string :name
+  t.integer :owner_id
 end
 
-db/schema.rb
-bundle exec rake db:schema:dump
-db:schema:load
+create_table :owners do |t|
+  t.string :name
+end
+
+create_table :ratings do |t|
+  t.integer :rating
+  t.integer :owner_id
+  t.integer :dog_id
+end
+
+######## MODELS ########
+class Dog < ApplicationRecord
+  belongs_to :owner
+  has_many :ratings
+end
+
+class Owner < ApplicationRecord
+  has_many :dogs, { :foreign_key => :owner_id }
+  has_many :ratings, { :foreign_key => :rating_id }
+end
+
+class Rating < ApplicationRecord
+  belongs_to :dog
+  belongs_to :owner
+end
+
+##### ADD/EDIT/QUERY #####
+new_rating = Rating.new(rating: 5)
+new_rating.create_dog(name: 'Spot', owner_id: 1)
+new_rating.save
+
+spot = Dog.find_by(name: 'Spot')
+new_rating = Rating.new(owner_id: 2, dog: spot, rating: 8)
+new_rating.save
+
+new_rating.dog
+jayda = Dog.find_by(name: 'Jayda')
+new_rating.assign_attributes(judge_id: 1, dog: jayda)
+new_rating
+new_rating.dog

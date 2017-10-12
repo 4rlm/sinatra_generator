@@ -20,7 +20,11 @@ gem 'rack', '1.5.2'
 gem 'shotgun'
 gem 'faker'
 gem 'bcrypt'
-gem 'irbtools'
+
+gem 'irbtools', require: 'irbtools/binding'
+gem 'pry'
+
+
 
 group :test do
   gem 'shoulda-matchers'
