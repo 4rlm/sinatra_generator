@@ -69,3 +69,41 @@ jayda = Dog.find_by(name: 'Jayda')
 new_rating.assign_attributes(judge_id: 1, dog: jayda)
 new_rating
 new_rating.dog
+
+##################################
+
+class CreateSubscriptions < ActiveRecord::Migration[5.0]
+  def change
+    create_table :subscriptions do |t|
+      t.integer :user_id, null: false
+			t.integer :channel_id, null: false
+
+      t.timestamps null: false
+    end
+
+    add_index :subscriptions, [:user_id, :channel_id], :unique => true
+    add_index :subscriptions, :channel_id
+  end
+end
+
+####################################
+
+class Channel < ActiveRecord::Base
+  has_many :subscriptions
+  has_many :users, through: :subscriptions
+end
+
+class Subscription < ActiveRecord::Base
+  belongs_to :channel
+  belongs_to :user
+end
+
+class User < ActiveRecord::Base
+  validates :first_name, :last_name, :email, :pw_hash, presence: true
+  validates :email, uniqueness: true
+
+  has_many :subscriptions
+  has_many :channels, through: :subscriptions
+
+  ..... more...
+end

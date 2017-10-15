@@ -139,11 +139,11 @@ module FileWriter
     route_strings = routes.join("")
     File.open(application_controller_path, 'w+') do |f|
       f.write(<<-EOF.gsub(/^ {6}/, ''))
-      require 'rack-flash'
+      require 'will_paginate/active_record'
 
       class ApplicationController < Sinatra::Base
         include ApplicationHelper
-        use Rack::Flash
+        include WillPaginate::Sinatra::Helpers
 
         configure do
           set :public_folder, 'public'
@@ -152,8 +152,24 @@ module FileWriter
           set :session_secret, "password_security"
         end
 
+        before do
+          @alert_msg = {}
+          logged_in
+        end
+
         get '/' do
-          !logged_in ? (redirect 'users/login') : redirect_to_home_page
+          @alert_msg[:success_alert] = "Success test alert ..."
+          @alert_msg[:danger_alert] = "Danger test alert ..."
+
+          # !logged_in ? (redirect 'users/login') : redirect_to_home_page
+
+          # # if !logged_in
+          # #   redirect 'users/login'
+          # # else
+          #   @channels = Channel.all.order("updated_at DESC").paginate(page: params[:page], per_page: 10)
+          #   redirect_to_home_page
+          # # end
+
         end
 
       #{route_strings}
@@ -173,17 +189,35 @@ module FileWriter
       f.write(<<-EOF.strip_heredoc)
         class #{camelize.pluralize}Controller < ApplicationController
 
+          # before "/#{snake_plural}/*" do
+          #   if !request.post?
+          #     if !logged_in
+          #       @alert_msg[:danger_alert] = "Please login to choose new #{snake_plural}."
+          #       erb :'users/login'
+          #     end
+          #   end
+          # end
+
           # INDEX: #{snake_plural} view all.
           get '/#{snake_plural}' do
             @#{snake_plural} = #{camelize}.order('updated_at ASC').limit(10)
+            # @#{snake_plural} = #{camelize}.all.order('updated_at DESC').paginate(page: params[:page], per_page: 5)
             erb :'#{snake_plural}/index'
           end
 
           # NEW: #{snake_plural} new
           get '/#{snake_plural}/new' do
-            @#{snake_case} = #{camelize}.new  ## Prevents errors on Form Partial.
-            erb :'#{snake_plural}/new'
+
+            if !logged_in
+              @alert_msg[:danger_alert] = "Please login to choose new #{camelize}."
+              erb :'users/login'
+            else
+              @#{snake_case} = #{camelize}.new  ## Prevents errors on Form Partial.
+              erb :'#{snake_plural}/new'
+            end
+
           end
+
 
           # CREATE:
           post '/#{snake_plural}' do
@@ -537,7 +571,9 @@ module FileWriter
 
         <body>
           <div>
-          <nav class="navbar navbar-fixed-top">
+          <!-- <nav class="navbar navbar-fixed-top"> -->
+          <nav class="navbar navbar-inverse navbar-fixed-top">
+
               <div class="container-fluid">
                 <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
@@ -575,10 +611,9 @@ module FileWriter
 
           <div class='container erb-wrapper text-center' id='main'>
 
-            <% flash.keys.each do |type| %>
-              <div data-alert class="flash <%= type %> alert-box radius">
-                <%= flash[type] %>
-                <a href="#" class="close">&times;</a>
+            <% @alert_msg.keys.each do |type| %>
+              <div class="alert <%= type %>" role="alert">
+                <%= @alert_msg[type] %>
               </div>
             <% end %>
 

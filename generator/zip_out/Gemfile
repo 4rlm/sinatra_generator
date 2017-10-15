@@ -1,7 +1,5 @@
-# A sample Gemfile
 source "https://rubygems.org"
 
-# gem "rails"
 gem 'sinatra'
 gem 'activerecord', :require => 'active_record'
 gem 'sinatra-activerecord', :require => 'sinatra/activerecord'
@@ -12,8 +10,7 @@ gem 'shotgun'
 gem 'pry'
 gem 'bcrypt'
 gem "tux"
-gem 'rack', '2.0.3'
-gem 'rack-flash3'
+gem 'rack'
 gem 'sinatra-flash'
 
 # PostgreSQL driver
@@ -24,4 +21,5 @@ gem 'pg'
 gem 'faker'
 gem 'irbtools', require: 'irbtools/binding'
 gem 'rspec', '~>3.0'
-gem 'will_paginate', '~> 3.1.0'
+gem 'will_paginate', require: 'will_paginate'
+gem 'will_paginate-bootstrap', :require => 'will_paginate-bootstrap'

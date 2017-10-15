@@ -1,12 +1,21 @@
 class UsersController < ApplicationController
   include UsersHelper
-  include ApplicationHelper
+
+  # before "/*" do
+  #   logged_in
+  #   binding.pry
+  # end
+
+
+  # before "/channels/*" do
+  #   logged_in
+  # end
 
   # Sample Before/After Hook
   # before "/entries/*" do
   #   if !request.post?
   #     if !logged_in
-  #       flash[:error_alert] = "Please login to post new entries."
+  #         @alert_msg[:danger_alert] = "Please login to post new entries."
   #       erb :'users/login'
   #     end
   #   end
@@ -22,10 +31,11 @@ class UsersController < ApplicationController
 
   get '/users/index' do
     if !logged_in
-      flash[:error_alert] = "Please login to view members."
+      @alert_msg[:danger_alert] = "Please login to view members."
       erb :'users/login'
     else
-      @users = User.order('updated_at ASC').limit(10)
+      # @users = User.order('updated_at ASC').limit(10)
+      @users = User.all.order("updated_at DESC").paginate(page: params[:page], per_page: 5)
       erb :'users/index'
     end
   end
@@ -35,18 +45,19 @@ class UsersController < ApplicationController
   end
 
   post '/users/register' do
-    if params[:user][:name].empty? || params[:user][:email].empty? || params[:user][:password].empty?
-      flash[:error_alert] = "Pleae don't leave blank content"
+    if params[:user][:first_name].empty? || params[:user][:last_name].empty? || params[:user][:email].empty? || params[:user][:password].empty?
+
+      @alert_msg[:danger_alert] = "Please don't leave blank content."
       erb :'/users/register'
     else
       user = User.create(params[:user])
       if user && user.valid?
         @user = user
         session[:user_id] = @user.id
-        flash[:success_alert] = "Welcome, #{@user.name}!"
+        @alert_msg[:success_alert] = "Welcome, #{@user.first_name.capitalize}!"
         redirect_to_home_page
       else
-        flash[:error_alert] = "Email address already registered."
+        @alert_msg[:danger_alert] = "Email address already registered."
         erb :'/users/register'
       end
     end
@@ -59,16 +70,18 @@ class UsersController < ApplicationController
   post '/users/login' do
     if not logged_in
       if params[:user][:email].empty? || params[:user][:password].empty?
-        flash[:error_alert] = "Please don't leave blank content"
+
+        @alert_msg[:danger_alert] = "Please don't leave blank content"
         erb :'users/login'
       else
         @user = User.authenticate(params[:user][:email], params[:user][:password])
         if @user
           session[:user_id] = @user.id
-          flash[:success_alert] = "Welcome, #{@user.name}!"
-          redirect_to_home_page
+          @alert_msg[:success_alert] = "Welcome, #{@user.first_name.capitalize}!"
+          # erb :'index'
+          erb :'users/show'
         else
-          flash[:error_alert] = "We can't find you, Please try again"
+          @alert_msg[:danger_alert] = "We can't find you, Please try again"
           erb :'users/login'
         end
       end
@@ -80,11 +93,11 @@ class UsersController < ApplicationController
     if params[:id] == "logout"
       session[:user_id] = nil
       @user = nil
-      flash[:error_alert] = "Goodbye!  Please login to return."
+      @alert_msg[:danger_alert] = "Goodbye!  Please login to return."
       erb :'/users/login'
     else
       @user = User.find(params[:id])
-      flash[:success_alert] = "#{@user.name.capitalize} Account Details"
+      @alert_msg[:success_alert] = "#{@user.first_name.capitalize} Account Details"
       erb :'users/show'
     end
   end
@@ -108,7 +121,10 @@ class UsersController < ApplicationController
   # DELETE:
   delete '/users/:id' do
     User.find(params[:id]).destroy!
-    redirect '/users'
+    session[:user_id] = nil
+    @user = nil
+    @alert_msg[:danger_alert] = "Account Deleted. Please re-register to continue."
+    erb :'/users/register'
   end
 
 end

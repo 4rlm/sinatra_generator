@@ -18,10 +18,6 @@ module ApplicationHelper
     erb :'index'
   end
 
-  def redirect_to_entries
-    redirect '/entries'
-  end
-
   def redirect_to_users
     redirect '/users'
   end

@@ -3,18 +3,18 @@
 <table class="table table-bordered table-hover table-striped">
   <tr>
     <th class="w-small">ID</th>
-    <th>Name</th>
+    <th>First Name</th>
+    <th>Last Name</th>
     <th>Email</th>
-    <th>Pw Hash</th>
     <th class="w-med">Updated</th>
     <th colspan="3" class="w-med">Manage</th>
   </tr>
     <% @users.each do |user|%>
   <tr>
     <td class="w-small"><%= user.id%></td>
-    <td><%= user.name %></td>
+    <td><%= user.first_name %></td>
+    <td><%= user.last_name %></td>
     <td><%= user.email %></td>
-    <td><%= user.pw_hash %></td>
     <td><%= user.updated_at.strftime('%x')%></td>
 
     <td><a href="/users/<%= user.id %>"><span class="glyphicon glyphicon-folder-open"></span></a></td>
@@ -28,6 +28,6 @@
 
 
 <div class="digg_pagination">
-  <%#= will_paginate @users, renderer: BootstrapPagination::Sinatra %>
+  <%= will_paginate @users, renderer: BootstrapPagination::Sinatra %>
   <%#= will_paginate @users %>
 </div>
