@@ -429,7 +429,7 @@ module FileWriter
           <h3>#{snake_to_cap_string(snake_case)} Detail View</h3>
         </div>
 
-        <table class="table table-bordered table-hover table-striped">
+        <table class="table table-bordered table-hover table-striped text-nowrap">
           <tr>
             <th class="w-small">ID</th>
       #{th_block_strings}
@@ -473,7 +473,7 @@ module FileWriter
       f.write(<<-EOF.gsub(/^ {6}/, ''))
       <h3>View All #{snake_to_cap_string(snake_case)}</h3>
 
-      <table class="table table-bordered table-hover table-striped">
+      <table class="table table-bordered table-hover table-striped text-nowrap">
         <tr>
           <th class="w-small">ID</th>
       #{th_block_strings}

@@ -1,6 +1,6 @@
 <h3>View All User</h3>
 
-<table class="table table-bordered table-hover table-striped">
+<table class="table table-bordered table-hover table-striped text-nowrap">
   <tr>
     <th class="w-small">ID</th>
     <th>First Name</th>
@@ -16,16 +16,12 @@
     <td><%= user.last_name %></td>
     <td><%= user.email %></td>
     <td><%= user.updated_at.strftime('%x')%></td>
-
     <td><a href="/users/<%= user.id %>"><span class="glyphicon glyphicon-folder-open"></span></a></td>
     <td><a href="/users/<%= user.id %>/edit"><span class="glyphicon glyphicon-edit"></span></a></td>
-
     <td><%= erb :'users/_delete', layout: true, locals: { user: user }%></td>
-
   </tr>
   <% end %>
 </table>
-
 
 <div class="digg_pagination">
   <%= will_paginate @users, renderer: BootstrapPagination::Sinatra %>

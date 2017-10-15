@@ -5,11 +5,8 @@
   </div>
 
   <form class="form-horizontal" action="/users/register" method="post">
-
     <!-- ## Form content moved to partial (_form_fields.erb) -->
     <%= erb :'users/_form_fields', locals: { user: User.new }%>
-
-
     <button class="btn btn-success" name="commit" type="submit">Submit Registration</button>
   </form>
 
