@@ -597,7 +597,15 @@ module FileWriter
                   <ul class="nav navbar-nav navbar-right">
                     <% if @user %>
                       <li><a href='/users/logout'>Log Out</a></li>
-                      <li><a href="/users/<%= @user.id %>"><%= @user.name.capitalize %></a></li>
+
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><%= @user.username %> <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="/users/<%= @user.id %>"><%= @user.username %> Profile</a></li>
+                          <li><a href='#/items/user_items'>View My Items</a></li>
+                        </ul>
+                      </li>
+
                     <% else %>
                       <li><a href='/users/register'>Register</a></li>
                       <li><a href='/users/login'>Login</a></li>
