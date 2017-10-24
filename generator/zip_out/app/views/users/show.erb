@@ -7,8 +7,7 @@
   <table class="table table-bordered table-hover table-striped text-nowrap">
     <tr>
       <th class="w-small">ID</th>
-      <th class="w-small">First Name</th>
-      <th class="w-small">Last Name</th>
+      <th class="w-small">Username</th>
       <th class="w-small">Email</th>
       <th class="w-med">Updated</th>
       <th class="w-med">Edit</th>
@@ -17,8 +16,7 @@
 
     <tr>
       <td><%= @user.id %></td>
-      <td><%= @user.first_name %></td>
-      <td><%= @user.last_name %></td>
+      <td><%= @user.username %></td>
       <td><%= @user.email %></td>
       <td><%= @user.updated_at.strftime('%x')%></td>
       <td><a href="/users/<%= @user.id %>/edit"><span class="glyphicon glyphicon-edit"></span></a></td>

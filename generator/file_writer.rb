@@ -161,7 +161,7 @@ module FileWriter
           @alert_msg[:success_alert] = "Success test alert ..."
           @alert_msg[:danger_alert] = "Danger test alert ..."
 
-          # !logged_in ? (redirect 'users/login') : redirect_to_home_page
+          !logged_in ? (redirect 'users/login') : redirect_to_home_page
 
           # # if !logged_in
           # #   redirect 'users/login'

@@ -45,7 +45,7 @@ class UsersController < ApplicationController
   end
 
   post '/users/register' do
-    if params[:user][:first_name].empty? || params[:user][:last_name].empty? || params[:user][:email].empty? || params[:user][:password].empty?
+    if params[:user][:username].empty? || params[:user][:email].empty? || params[:user][:password].empty?
 
       @alert_msg[:danger_alert] = "Please don't leave blank content."
       erb :'/users/register'
@@ -54,7 +54,7 @@ class UsersController < ApplicationController
       if user && user.valid?
         @user = user
         session[:user_id] = @user.id
-        @alert_msg[:success_alert] = "Welcome, #{@user.first_name.capitalize}!"
+        @alert_msg[:success_alert] = "Welcome, #{@user.username}!"
         redirect_to_home_page
       else
         @alert_msg[:danger_alert] = "Email address already registered."
@@ -77,7 +77,7 @@ class UsersController < ApplicationController
         @user = User.authenticate(params[:user][:email], params[:user][:password])
         if @user
           session[:user_id] = @user.id
-          @alert_msg[:success_alert] = "Welcome, #{@user.first_name.capitalize}!"
+          @alert_msg[:success_alert] = "Welcome, #{@user.username}!"
           # erb :'index'
           erb :'users/show'
         else
@@ -97,7 +97,7 @@ class UsersController < ApplicationController
       erb :'/users/login'
     else
       @user = User.find(params[:id])
-      @alert_msg[:success_alert] = "#{@user.first_name.capitalize} Account Details"
+      @alert_msg[:success_alert] = "#{@user.username} Account Details"
       erb :'users/show'
     end
   end
